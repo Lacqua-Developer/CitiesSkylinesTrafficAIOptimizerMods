@@ -318,14 +318,25 @@ namespace TrafficAIOptimizer.Integration
                 return 0;
             }
 
+            // 1. Ativar IA Avançada de Veículos e Seleção Dinâmica de Faixas no TM:PE (se o mod estiver presente)
+            if (IsTMPEAvailable())
+            {
+                TryEnableTMPEAdvancedVehicleAI();
+            }
+
             VehicleManager vehicleManager = Singleton<VehicleManager>.instance;
             NetManager netManager = Singleton<NetManager>.instance;
             PathManager pathManager = Singleton<PathManager>.instance;
 
             Vector3 nodePos = netManager.m_nodes.m_buffer[nodeId].m_position;
-            const float RADIUS = 80f;
+            // Raio ampliado para cobrir segmentos longos com filas de centenas de veículos
+            const float SEARCH_RADIUS = 250f;
+            const float INTERSECTION_RADIUS = 25f;
 
-            // 1. Re-roteamento dinâmico de veículos estagnados ou presos em fila
+            int junctionCleared = 0;
+            const int MAX_JUNCTION_CLEAR = 5;
+
+            // 2. Re-roteamento dinâmico e desobstrução da cabeça da fila
             ushort maxVehicles = (ushort)vehicleManager.m_vehicles.m_buffer.Length;
             for (ushort vId = 1; vId < maxVehicles; vId++)
             {
@@ -335,9 +346,22 @@ namespace TrafficAIOptimizer.Integration
                 }
 
                 Vector3 vehPos = vehicleManager.m_vehicles.m_buffer[vId].GetLastFramePosition();
-                if (Vector3.Distance(vehPos, nodePos) <= RADIUS)
+                float distToNode = Vector3.Distance(vehPos, nodePos);
+
+                if (distToNode <= SEARCH_RADIUS)
                 {
                     float speed = vehicleManager.m_vehicles.m_buffer[vId].GetLastFrameVelocity().magnitude;
+
+                    // Desobstruir até 5 veículos travados imediatamente na entrada da junção (deadlock do nó)
+                    if (distToNode <= INTERSECTION_RADIUS && speed < 0.10f && junctionCleared < MAX_JUNCTION_CLEAR)
+                    {
+                        vehicleManager.ReleaseVehicle(vId);
+                        junctionCleared++;
+                        reroutedCount++;
+                        continue;
+                    }
+
+                    // Veículos estagnados ao longo do segmento da fila
                     if (speed < 0.35f)
                     {
                         // Invalida o caminho estático pré-calculado no momento do spawn
@@ -347,27 +371,32 @@ namespace TrafficAIOptimizer.Integration
                             pathManager.ReleasePath(currentPath);
                             vehicleManager.m_vehicles.m_buffer[vId].m_path = 0;
                         }
-                        // Força o simulador a calcular nova rota no frame subsequente
+                        // Força o simulador/TM:PE a calcular nova rota no frame subsequente com faixas dinâmicas
                         vehicleManager.m_vehicles.m_buffer[vId].m_flags |= Vehicle.Flags.WaitingPath;
                         reroutedCount++;
                     }
                 }
             }
 
-            // 2. Balanceamento de Setas de Faixa (Lane Arrows) no segmento e nós adjacentes
-            TryBalanceLaneArrows(segmentId, nodeId);
-
-            // 3. Ativar IA Avançada de Veículos no TM:PE (se o mod estiver presente)
-            if (IsTMPEAvailable())
+            // 3. Balanceamento de Setas de Faixa (Lane Arrows) em todos os segmentos conectados ao nó
+            if (segmentId != 0)
             {
-                TryEnableTMPEAdvancedVehicleAI();
+                TryBalanceLaneArrows(segmentId, nodeId);
+            }
+            for (int s = 0; s < 8; s++)
+            {
+                ushort sId = netManager.m_nodes.m_buffer[nodeId].GetSegment(s);
+                if (sId != 0 && sId != segmentId)
+                {
+                    TryBalanceLaneArrows(sId, nodeId);
+                }
             }
 
             return reroutedCount;
         }
 
         /// <summary>
-        /// Balanceia as setas de faixa (Lane Arrows) nos segmentos para evitar afunilamento em fila única.
+        /// Balanceia as setas de faixa (Lane Arrows) nas faixas que entram no cruzamento para evitar afunilamento em fila única.
         /// </summary>
         public static void TryBalanceLaneArrows(ushort segmentId, ushort nodeId)
         {
@@ -381,16 +410,37 @@ namespace TrafficAIOptimizer.Integration
                 NetInfo info = netManager.m_segments.m_buffer[segmentId].Info;
                 if (info == null || info.m_lanes == null) return;
 
+                bool isEndNode = netManager.m_segments.m_buffer[segmentId].m_endNode == nodeId;
+                bool isStartNode = netManager.m_segments.m_buffer[segmentId].m_startNode == nodeId;
+
                 uint laneId = netManager.m_segments.m_buffer[segmentId].m_lanes;
                 int laneIndex = 0;
 
-                // Coletar faixas veiculares
+                // Coletar faixas veiculares que fluem em direção ao nó do cruzamento
                 System.Collections.Generic.List<uint> vehicleLanes = new System.Collections.Generic.List<uint>();
                 while (laneId != 0 && laneIndex < info.m_lanes.Length)
                 {
-                    if ((info.m_lanes[laneIndex].m_laneType & (NetInfo.LaneType.Vehicle | NetInfo.LaneType.TransportVehicle)) != 0)
+                    var laneDesc = info.m_lanes[laneIndex];
+                    if ((laneDesc.m_laneType & (NetInfo.LaneType.Vehicle | NetInfo.LaneType.TransportVehicle)) != 0)
                     {
-                        vehicleLanes.Add(laneId);
+                        bool flowsTowardsNode = false;
+                        if (isEndNode && (laneDesc.m_direction & NetInfo.Direction.Forward) != 0)
+                        {
+                            flowsTowardsNode = true;
+                        }
+                        else if (isStartNode && (laneDesc.m_direction & NetInfo.Direction.Backward) != 0)
+                        {
+                            flowsTowardsNode = true;
+                        }
+                        else if (!isEndNode && !isStartNode)
+                        {
+                            flowsTowardsNode = true;
+                        }
+
+                        if (flowsTowardsNode)
+                        {
+                            vehicleLanes.Add(laneId);
+                        }
                     }
                     laneId = netManager.m_lanes.m_buffer[laneId].m_nextLane;
                     laneIndex++;
@@ -442,6 +492,7 @@ namespace TrafficAIOptimizer.Integration
 
         /// <summary>
         /// Tenta ativar as opções de Advanced Vehicle AI e Dynamic Lane Selection do TM:PE via Reflection segura.
+        /// Suporta campos estáticos reais do TM:PE v11 STABLE bem como métodos de UI/State.
         /// </summary>
         public static bool TryEnableTMPEAdvancedVehicleAI()
         {
@@ -452,23 +503,88 @@ namespace TrafficAIOptimizer.Integration
                 {
                     if (asm.GetName().Name == "TrafficManager")
                     {
+                        bool configured = false;
                         Type optionsType = asm.GetType("TrafficManager.State.Options")
                                         ?? asm.GetType("TrafficManager.Lifecycle.TMPELifecycle")
                                         ?? asm.GetType("TrafficManager.Manager.Impl.OptionsManager");
 
                         if (optionsType != null)
                         {
-                            PropertyInfo advProp = optionsType.GetProperty("AdvancedVehicleAI", BindingFlags.Public | BindingFlags.Static);
+                            // 1. Campos estáticos do TM:PE v11 (advancedAI, altLaneSelectionRatio, allowLaneChangesWhileGoingStraight)
+                            FieldInfo advField = optionsType.GetField("advancedAI", BindingFlags.Public | BindingFlags.Static);
+                            if (advField != null)
+                            {
+                                advField.SetValue(null, true);
+                                configured = true;
+                            }
+
+                            FieldInfo altRatioField = optionsType.GetField("altLaneSelectionRatio", BindingFlags.Public | BindingFlags.Static);
+                            if (altRatioField != null)
+                            {
+                                if (altRatioField.FieldType == typeof(byte))
+                                {
+                                    altRatioField.SetValue(null, (byte)75);
+                                }
+                                else
+                                {
+                                    altRatioField.SetValue(null, 75);
+                                }
+                                configured = true;
+                            }
+
+                            FieldInfo straightField = optionsType.GetField("allowLaneChangesWhileGoingStraight", BindingFlags.Public | BindingFlags.Static);
+                            if (straightField != null)
+                            {
+                                straightField.SetValue(null, true);
+                                configured = true;
+                            }
+
+                            // Fallback para propriedades caso seja outra versão/branch do TM:PE
+                            PropertyInfo advProp = optionsType.GetProperty("AdvancedVehicleAI", BindingFlags.Public | BindingFlags.Static)
+                                                ?? optionsType.GetProperty("advancedAI", BindingFlags.Public | BindingFlags.Static);
                             if (advProp != null && advProp.CanWrite)
                             {
                                 advProp.SetValue(null, true, null);
+                                configured = true;
                             }
 
-                            PropertyInfo dlsProp = optionsType.GetProperty("AltLaneSelectionRatio", BindingFlags.Public | BindingFlags.Static);
-                            if (dlsProp != null && dlsProp.CanWrite)
+                            PropertyInfo altProp = optionsType.GetProperty("AltLaneSelectionRatio", BindingFlags.Public | BindingFlags.Static)
+                                                ?? optionsType.GetProperty("altLaneSelectionRatio", BindingFlags.Public | BindingFlags.Static);
+                            if (altProp != null && altProp.CanWrite)
                             {
-                                dlsProp.SetValue(null, 50, null);
+                                if (altProp.PropertyType == typeof(byte))
+                                {
+                                    altProp.SetValue(null, (byte)75, null);
+                                }
+                                else
+                                {
+                                    altProp.SetValue(null, 75, null);
+                                }
+                                configured = true;
                             }
+                        }
+
+                        // 2. Chamar métodos de ativação em OptionsGameplayTab para persistir e notificar o jogo
+                        Type gameplayTab = asm.GetType("TrafficManager.State.OptionsGameplayTab");
+                        if (gameplayTab != null)
+                        {
+                            MethodInfo setAiMethod = gameplayTab.GetMethod("SetAdvancedAi", BindingFlags.Public | BindingFlags.Static);
+                            if (setAiMethod != null)
+                            {
+                                setAiMethod.Invoke(null, new object[] { true });
+                                configured = true;
+                            }
+
+                            MethodInfo onAltChanged = gameplayTab.GetMethod("OnAltLaneSelectionRatioChanged", BindingFlags.Public | BindingFlags.Static);
+                            if (onAltChanged != null)
+                            {
+                                onAltChanged.Invoke(null, new object[] { 75f });
+                                configured = true;
+                            }
+                        }
+
+                        if (configured)
+                        {
                             return true;
                         }
                     }
