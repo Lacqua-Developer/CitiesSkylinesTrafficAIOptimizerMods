@@ -29,8 +29,8 @@ namespace TrafficAIOptimizer.UI
     {
         public static TrafficAIPanel Instance { get; private set; }
 
-        private const float PANEL_WIDTH = 620f;
-        private const float PANEL_HEIGHT = 770f;
+        private const float PANEL_WIDTH = 700f;
+        private const float PANEL_HEIGHT = 880f;
 
         // --- Cabeçalho, Provedor e Chave ---
         private UILabel _titleLabel;
@@ -407,7 +407,7 @@ namespace TrafficAIOptimizer.UI
 
             _analyzeTrafficBtn = _trafficTabPanel.AddUIComponent<UIButton>();
             _analyzeTrafficBtn.text = LocalizationManager.Get("AnalyzeTraffic");
-            _analyzeTrafficBtn.width = 135f;
+            _analyzeTrafficBtn.width = 150f;
             _analyzeTrafficBtn.height = 34f;
             _analyzeTrafficBtn.relativePosition = new Vector3(0f, localY);
             _analyzeTrafficBtn.normalBgSprite = "ButtonMenu";
@@ -418,9 +418,9 @@ namespace TrafficAIOptimizer.UI
 
             _fixAllTrafficBtn = _trafficTabPanel.AddUIComponent<UIButton>();
             _fixAllTrafficBtn.text = LocalizationManager.Get("FixAllTrafficBtn");
-            _fixAllTrafficBtn.width = 170f;
+            _fixAllTrafficBtn.width = 190f;
             _fixAllTrafficBtn.height = 34f;
-            _fixAllTrafficBtn.relativePosition = new Vector3(142f, localY);
+            _fixAllTrafficBtn.relativePosition = new Vector3(158f, localY);
             _fixAllTrafficBtn.normalBgSprite = "ButtonMenu";
             _fixAllTrafficBtn.hoveredBgSprite = "ButtonMenuHovered";
             _fixAllTrafficBtn.textScale = 0.82f;
@@ -430,9 +430,9 @@ namespace TrafficAIOptimizer.UI
 
             _reanalyzeTrafficBtn = _trafficTabPanel.AddUIComponent<UIButton>();
             _reanalyzeTrafficBtn.text = LocalizationManager.Get("Reanalyze");
-            _reanalyzeTrafficBtn.width = 130f;
+            _reanalyzeTrafficBtn.width = 145f;
             _reanalyzeTrafficBtn.height = 34f;
-            _reanalyzeTrafficBtn.relativePosition = new Vector3(320f, localY);
+            _reanalyzeTrafficBtn.relativePosition = new Vector3(356f, localY);
             _reanalyzeTrafficBtn.normalBgSprite = "ButtonMenu";
             _reanalyzeTrafficBtn.hoveredBgSprite = "ButtonMenuHovered";
             _reanalyzeTrafficBtn.textScale = 0.85f;
@@ -441,9 +441,9 @@ namespace TrafficAIOptimizer.UI
 
             _clearTrafficBtn = _trafficTabPanel.AddUIComponent<UIButton>();
             _clearTrafficBtn.text = LocalizationManager.Get("Clear");
-            _clearTrafficBtn.width = 135f;
+            _clearTrafficBtn.width = 150f;
             _clearTrafficBtn.height = 34f;
-            _clearTrafficBtn.relativePosition = new Vector3(458f, localY);
+            _clearTrafficBtn.relativePosition = new Vector3(510f, localY);
             _clearTrafficBtn.normalBgSprite = "ButtonMenu";
             _clearTrafficBtn.hoveredBgSprite = "ButtonMenuHovered";
             _clearTrafficBtn.textScale = 0.85f;
@@ -454,17 +454,19 @@ namespace TrafficAIOptimizer.UI
 
             _trafficResultsContainer = _trafficTabPanel.AddUIComponent<UIPanel>();
             _trafficResultsContainer.width = _trafficTabPanel.width;
-            _trafficResultsContainer.height = 205f;
+            _trafficResultsContainer.height = 232f;
             _trafficResultsContainer.relativePosition = new Vector3(0f, localY);
             _trafficResultsContainer.backgroundSprite = "SubPanel";
+            EnableMouseWheelScrolling(_trafficResultsContainer);
 
-            localY += 212f;
+            localY += 240f;
 
             UIPanel detailsPanel = _trafficTabPanel.AddUIComponent<UIPanel>();
             detailsPanel.width = _trafficTabPanel.width;
-            detailsPanel.height = 220f;
+            detailsPanel.height = 275f;
             detailsPanel.relativePosition = new Vector3(0f, localY);
             detailsPanel.backgroundSprite = "SubPanel";
+            detailsPanel.clipChildren = true;
 
             _trafficDetailTitle = detailsPanel.AddUIComponent<UILabel>();
             _trafficDetailTitle.text = LocalizationManager.Get("SelectBottleneckHint");
@@ -475,42 +477,44 @@ namespace TrafficAIOptimizer.UI
 
             _trafficDetailCause = detailsPanel.AddUIComponent<UILabel>();
             _trafficDetailCause.text = "";
-            _trafficDetailCause.textScale = 0.8f;
+            _trafficDetailCause.textScale = 0.76f;
             _trafficDetailCause.textColor = Color.white;
             _trafficDetailCause.width = detailsPanel.width - 24f;
             _trafficDetailCause.autoHeight = true;
             _trafficDetailCause.wordWrap = true;
-            _trafficDetailCause.relativePosition = new Vector3(12f, 32f);
+            _trafficDetailCause.relativePosition = new Vector3(12f, 30f);
 
             _trafficDetailRec = detailsPanel.AddUIComponent<UILabel>();
             _trafficDetailRec.text = "";
-            _trafficDetailRec.textScale = 0.8f;
+            _trafficDetailRec.textScale = 0.76f;
             _trafficDetailRec.textColor = new Color32(180, 255, 180, 255);
             _trafficDetailRec.width = detailsPanel.width - 24f;
             _trafficDetailRec.autoHeight = true;
             _trafficDetailRec.wordWrap = true;
-            _trafficDetailRec.relativePosition = new Vector3(12f, 80f);
+            _trafficDetailRec.relativePosition = new Vector3(12f, 62f);
+
+            float actionBtnY = detailsPanel.height - 44f;
 
             _applyTrafficFixBtn = detailsPanel.AddUIComponent<UIButton>();
             _applyTrafficFixBtn.text = LocalizationManager.Get("ApplyTrafficFix");
-            _applyTrafficFixBtn.width = 270f;
-            _applyTrafficFixBtn.height = 32f;
-            _applyTrafficFixBtn.relativePosition = new Vector3(12f, 175f);
+            _applyTrafficFixBtn.width = 310f;
+            _applyTrafficFixBtn.height = 36f;
+            _applyTrafficFixBtn.relativePosition = new Vector3(12f, actionBtnY);
             _applyTrafficFixBtn.normalBgSprite = "ButtonMenu";
             _applyTrafficFixBtn.hoveredBgSprite = "ButtonMenuHovered";
-            _applyTrafficFixBtn.textScale = 0.85f;
+            _applyTrafficFixBtn.textScale = 0.80f;
             _applyTrafficFixBtn.textColor = new Color32(255, 215, 0, 255);
             _applyTrafficFixBtn.isVisible = false;
             _applyTrafficFixBtn.eventClick += (c, e) => OnApplyTrafficFixClicked();
 
             _redistributeLanesBtn = detailsPanel.AddUIComponent<UIButton>();
             _redistributeLanesBtn.text = LocalizationManager.Get("AntiSingleLaneBtn");
-            _redistributeLanesBtn.width = 295f;
-            _redistributeLanesBtn.height = 32f;
-            _redistributeLanesBtn.relativePosition = new Vector3(290f, 175f);
+            _redistributeLanesBtn.width = 330f;
+            _redistributeLanesBtn.height = 36f;
+            _redistributeLanesBtn.relativePosition = new Vector3(332f, actionBtnY);
             _redistributeLanesBtn.normalBgSprite = "ButtonMenu";
             _redistributeLanesBtn.hoveredBgSprite = "ButtonMenuHovered";
-            _redistributeLanesBtn.textScale = 0.82f;
+            _redistributeLanesBtn.textScale = 0.76f;
             _redistributeLanesBtn.textColor = new Color32(100, 230, 255, 255);
             _redistributeLanesBtn.tooltip = "Re-roteia veículos estagnados e balanceia as setas de faixa para forçar o uso de faixas vazias (Anti-Fila Indiana).";
             _redistributeLanesBtn.isVisible = false;
@@ -531,7 +535,7 @@ namespace TrafficAIOptimizer.UI
 
             _analyzeAlertsBtn = _cityAlertsTabPanel.AddUIComponent<UIButton>();
             _analyzeAlertsBtn.text = LocalizationManager.Get("AnalyzeAlerts");
-            _analyzeAlertsBtn.width = 135f;
+            _analyzeAlertsBtn.width = 150f;
             _analyzeAlertsBtn.height = 34f;
             _analyzeAlertsBtn.relativePosition = new Vector3(0f, localY);
             _analyzeAlertsBtn.normalBgSprite = "ButtonMenu";
@@ -542,9 +546,9 @@ namespace TrafficAIOptimizer.UI
 
             _fixAllAlertsBtn = _cityAlertsTabPanel.AddUIComponent<UIButton>();
             _fixAllAlertsBtn.text = LocalizationManager.Get("FixAllAlertsBtn");
-            _fixAllAlertsBtn.width = 170f;
+            _fixAllAlertsBtn.width = 190f;
             _fixAllAlertsBtn.height = 34f;
-            _fixAllAlertsBtn.relativePosition = new Vector3(142f, localY);
+            _fixAllAlertsBtn.relativePosition = new Vector3(158f, localY);
             _fixAllAlertsBtn.normalBgSprite = "ButtonMenu";
             _fixAllAlertsBtn.hoveredBgSprite = "ButtonMenuHovered";
             _fixAllAlertsBtn.textScale = 0.82f;
@@ -554,9 +558,9 @@ namespace TrafficAIOptimizer.UI
 
             _reanalyzeAlertsBtn = _cityAlertsTabPanel.AddUIComponent<UIButton>();
             _reanalyzeAlertsBtn.text = LocalizationManager.Get("Reanalyze");
-            _reanalyzeAlertsBtn.width = 130f;
+            _reanalyzeAlertsBtn.width = 145f;
             _reanalyzeAlertsBtn.height = 34f;
-            _reanalyzeAlertsBtn.relativePosition = new Vector3(320f, localY);
+            _reanalyzeAlertsBtn.relativePosition = new Vector3(356f, localY);
             _reanalyzeAlertsBtn.normalBgSprite = "ButtonMenu";
             _reanalyzeAlertsBtn.hoveredBgSprite = "ButtonMenuHovered";
             _reanalyzeAlertsBtn.textScale = 0.85f;
@@ -565,9 +569,9 @@ namespace TrafficAIOptimizer.UI
 
             _clearAlertsBtn = _cityAlertsTabPanel.AddUIComponent<UIButton>();
             _clearAlertsBtn.text = LocalizationManager.Get("Clear");
-            _clearAlertsBtn.width = 135f;
+            _clearAlertsBtn.width = 150f;
             _clearAlertsBtn.height = 34f;
-            _clearAlertsBtn.relativePosition = new Vector3(458f, localY);
+            _clearAlertsBtn.relativePosition = new Vector3(510f, localY);
             _clearAlertsBtn.normalBgSprite = "ButtonMenu";
             _clearAlertsBtn.hoveredBgSprite = "ButtonMenuHovered";
             _clearAlertsBtn.textScale = 0.85f;
@@ -578,17 +582,19 @@ namespace TrafficAIOptimizer.UI
 
             _alertsResultsContainer = _cityAlertsTabPanel.AddUIComponent<UIPanel>();
             _alertsResultsContainer.width = _cityAlertsTabPanel.width;
-            _alertsResultsContainer.height = 205f;
+            _alertsResultsContainer.height = 232f;
             _alertsResultsContainer.relativePosition = new Vector3(0f, localY);
             _alertsResultsContainer.backgroundSprite = "SubPanel";
+            EnableMouseWheelScrolling(_alertsResultsContainer);
 
-            localY += 212f;
+            localY += 240f;
 
             UIPanel detailsPanel = _cityAlertsTabPanel.AddUIComponent<UIPanel>();
             detailsPanel.width = _cityAlertsTabPanel.width;
-            detailsPanel.height = 220f;
+            detailsPanel.height = 275f;
             detailsPanel.relativePosition = new Vector3(0f, localY);
             detailsPanel.backgroundSprite = "SubPanel";
+            detailsPanel.clipChildren = true;
 
             _alertDetailTitle = detailsPanel.AddUIComponent<UILabel>();
             _alertDetailTitle.text = LocalizationManager.Get("SelectAlertHint");
@@ -599,30 +605,30 @@ namespace TrafficAIOptimizer.UI
 
             _alertDetailCause = detailsPanel.AddUIComponent<UILabel>();
             _alertDetailCause.text = "";
-            _alertDetailCause.textScale = 0.8f;
+            _alertDetailCause.textScale = 0.76f;
             _alertDetailCause.textColor = Color.white;
             _alertDetailCause.width = detailsPanel.width - 24f;
             _alertDetailCause.autoHeight = true;
             _alertDetailCause.wordWrap = true;
-            _alertDetailCause.relativePosition = new Vector3(12f, 32f);
+            _alertDetailCause.relativePosition = new Vector3(12f, 30f);
 
             _alertDetailRec = detailsPanel.AddUIComponent<UILabel>();
             _alertDetailRec.text = "";
-            _alertDetailRec.textScale = 0.8f;
+            _alertDetailRec.textScale = 0.76f;
             _alertDetailRec.textColor = new Color32(180, 255, 180, 255);
             _alertDetailRec.width = detailsPanel.width - 24f;
             _alertDetailRec.autoHeight = true;
             _alertDetailRec.wordWrap = true;
-            _alertDetailRec.relativePosition = new Vector3(12f, 80f);
+            _alertDetailRec.relativePosition = new Vector3(12f, 62f);
 
             _applyAlertFixBtn = detailsPanel.AddUIComponent<UIButton>();
             _applyAlertFixBtn.text = LocalizationManager.Get("ApplyCityAlertFix");
-            _applyAlertFixBtn.width = 280f;
-            _applyAlertFixBtn.height = 32f;
-            _applyAlertFixBtn.relativePosition = new Vector3(12f, 175f);
+            _applyAlertFixBtn.width = 330f;
+            _applyAlertFixBtn.height = 36f;
+            _applyAlertFixBtn.relativePosition = new Vector3(12f, detailsPanel.height - 44f);
             _applyAlertFixBtn.normalBgSprite = "ButtonMenu";
             _applyAlertFixBtn.hoveredBgSprite = "ButtonMenuHovered";
-            _applyAlertFixBtn.textScale = 0.85f;
+            _applyAlertFixBtn.textScale = 0.82f;
             _applyAlertFixBtn.textColor = new Color32(120, 230, 120, 255);
             _applyAlertFixBtn.isVisible = false;
             _applyAlertFixBtn.eventClick += (c, e) => OnApplyAlertFixClicked();
@@ -647,13 +653,20 @@ namespace TrafficAIOptimizer.UI
             _refreshLogBtn.relativePosition = new Vector3(0f, localY);
             _refreshLogBtn.normalBgSprite = "ButtonMenu";
             _refreshLogBtn.hoveredBgSprite = "ButtonMenuHovered";
+            _refreshLogBtn = _logTabPanel.AddUIComponent<UIButton>();
+            _refreshLogBtn.text = LocalizationManager.Get("ReanalyzeLogDemand");
+            _refreshLogBtn.width = 280f;
+            _refreshLogBtn.height = 34f;
+            _refreshLogBtn.relativePosition = new Vector3(0f, localY);
+            _refreshLogBtn.normalBgSprite = "ButtonMenu";
+            _refreshLogBtn.hoveredBgSprite = "ButtonMenuHovered";
             _refreshLogBtn.textScale = 0.82f;
             _refreshLogBtn.textColor = new Color32(150, 220, 255, 255);
             _refreshLogBtn.eventClick += (c, e) => RefreshLogDisplay();
 
             _clearLogBtn = _logTabPanel.AddUIComponent<UIButton>();
             _clearLogBtn.text = LocalizationManager.Get("ClearHistory");
-            _clearLogBtn.width = 180f;
+            _clearLogBtn.width = 210f;
             _clearLogBtn.height = 34f;
             _clearLogBtn.relativePosition = new Vector3(290f, localY);
             _clearLogBtn.normalBgSprite = "ButtonMenu";
@@ -670,17 +683,19 @@ namespace TrafficAIOptimizer.UI
 
             _logResultsContainer = _logTabPanel.AddUIComponent<UIPanel>();
             _logResultsContainer.width = _logTabPanel.width;
-            _logResultsContainer.height = 205f;
+            _logResultsContainer.height = 232f;
             _logResultsContainer.relativePosition = new Vector3(0f, localY);
             _logResultsContainer.backgroundSprite = "SubPanel";
+            EnableMouseWheelScrolling(_logResultsContainer);
 
-            localY += 212f;
+            localY += 240f;
 
             UIPanel detailsPanel = _logTabPanel.AddUIComponent<UIPanel>();
             detailsPanel.width = _logTabPanel.width;
-            detailsPanel.height = 220f;
+            detailsPanel.height = 275f;
             detailsPanel.relativePosition = new Vector3(0f, localY);
             detailsPanel.backgroundSprite = "SubPanel";
+            detailsPanel.clipChildren = true;
 
             _logDetailTitle = detailsPanel.AddUIComponent<UILabel>();
             _logDetailTitle.text = LocalizationManager.Get("SelectLogHint");
@@ -691,42 +706,44 @@ namespace TrafficAIOptimizer.UI
 
             _logDetailInfo = detailsPanel.AddUIComponent<UILabel>();
             _logDetailInfo.text = "";
-            _logDetailInfo.textScale = 0.8f;
+            _logDetailInfo.textScale = 0.76f;
             _logDetailInfo.textColor = Color.white;
             _logDetailInfo.width = detailsPanel.width - 24f;
             _logDetailInfo.autoHeight = true;
             _logDetailInfo.wordWrap = true;
-            _logDetailInfo.relativePosition = new Vector3(12f, 32f);
+            _logDetailInfo.relativePosition = new Vector3(12f, 30f);
 
             _logDetailAlternative = detailsPanel.AddUIComponent<UILabel>();
             _logDetailAlternative.text = "";
-            _logDetailAlternative.textScale = 0.8f;
+            _logDetailAlternative.textScale = 0.76f;
             _logDetailAlternative.textColor = new Color32(160, 230, 255, 255);
             _logDetailAlternative.width = detailsPanel.width - 24f;
             _logDetailAlternative.autoHeight = true;
             _logDetailAlternative.wordWrap = true;
-            _logDetailAlternative.relativePosition = new Vector3(12f, 80f);
+            _logDetailAlternative.relativePosition = new Vector3(12f, 62f);
+
+            float actionBtnY = detailsPanel.height - 44f;
 
             _requestAlternativeBtn = detailsPanel.AddUIComponent<UIButton>();
             _requestAlternativeBtn.text = LocalizationManager.Get("RequestAlternativeBtn");
-            _requestAlternativeBtn.width = 300f;
-            _requestAlternativeBtn.height = 32f;
-            _requestAlternativeBtn.relativePosition = new Vector3(12f, 175f);
+            _requestAlternativeBtn.width = 320f;
+            _requestAlternativeBtn.height = 36f;
+            _requestAlternativeBtn.relativePosition = new Vector3(12f, actionBtnY);
             _requestAlternativeBtn.normalBgSprite = "ButtonMenu";
             _requestAlternativeBtn.hoveredBgSprite = "ButtonMenuHovered";
-            _requestAlternativeBtn.textScale = 0.82f;
+            _requestAlternativeBtn.textScale = 0.80f;
             _requestAlternativeBtn.textColor = new Color32(255, 215, 0, 255);
             _requestAlternativeBtn.isVisible = false;
             _requestAlternativeBtn.eventClick += (c, e) => OnRequestAlternativeClicked();
 
             _applyAlternativeBtn = detailsPanel.AddUIComponent<UIButton>();
             _applyAlternativeBtn.text = LocalizationManager.Get("ApplyAlternativeBtn");
-            _applyAlternativeBtn.width = 240f;
-            _applyAlternativeBtn.height = 32f;
-            _applyAlternativeBtn.relativePosition = new Vector3(320f, 175f);
+            _applyAlternativeBtn.width = 310f;
+            _applyAlternativeBtn.height = 36f;
+            _applyAlternativeBtn.relativePosition = new Vector3(340f, actionBtnY);
             _applyAlternativeBtn.normalBgSprite = "ButtonMenu";
             _applyAlternativeBtn.hoveredBgSprite = "ButtonMenuHovered";
-            _applyAlternativeBtn.textScale = 0.82f;
+            _applyAlternativeBtn.textScale = 0.80f;
             _applyAlternativeBtn.textColor = new Color32(120, 255, 120, 255);
             _applyAlternativeBtn.isVisible = false;
             _applyAlternativeBtn.eventClick += (c, e) => OnApplyAlternativeClicked();
@@ -1385,6 +1402,33 @@ namespace TrafficAIOptimizer.UI
                     Destroy(comp.gameObject);
                 }
             }
+        }
+
+        private static void EnableMouseWheelScrolling(UIPanel container)
+        {
+            if (container == null) return;
+            container.clipChildren = true;
+            container.eventMouseWheel += (c, e) =>
+            {
+                if (container.components.Count == 0) return;
+                float delta = e.wheelDelta * 38f;
+                float topY = container.components[0].relativePosition.y;
+                float bottomY = container.components[container.components.Count - 1].relativePosition.y + 36f;
+
+                // Não rolar para baixo se já estiver no topo
+                if (delta > 0 && topY >= 6f) return;
+                // Não rolar para cima se o último item já estiver visível no rodapé
+                if (delta < 0 && bottomY <= container.height - 6f) return;
+
+                for (int i = 0; i < container.components.Count; i++)
+                {
+                    UIComponent comp = container.components[i];
+                    if (comp != null)
+                    {
+                        comp.relativePosition = new Vector3(comp.relativePosition.x, comp.relativePosition.y + delta);
+                    }
+                }
+            };
         }
 
         private string GetProviderButtonText()

@@ -34,11 +34,6 @@ O **City & Traffic AI Optimizer** é uma ferramenta de gestão municipal intelig
 - **Auditoria de Correções e Monitoramento de 10 Minutos**:
   - Cada intervenção municipal ou viária é registrada com carimbo de hora e cronômetro em tempo real.
   - Se o problema persistir por **mais de 10 minutos (600 segundos)**, o mod sinaliza persistência e aciona a DeepSeek para formular uma **Solução Alternativa Avançada** (reestruturação macro, transporte de massa ou políticas públicas).
-- **Suporte Multilíngue Dinâmico (i18n)**:
-  - Detecta automaticamente o idioma ativo do Cities: Skylines via `LocaleManager`.
-  - Idiomas suportados com tradução integral: **Português (`pt-BR`)**, **Inglês (`en`)**, **Francês (`fr`)** e **Espanhol (`es`)**.
-  - Fallback automático para **Inglês** caso o jogo esteja em outro idioma (Alemão, Russo, Chinês, Japonês, etc.).
-  - A DeepSeek é instruída a responder no mesmo idioma configurado no jogo.
 - **Raciocínio Especializado com DeepSeek**:
   - `deepseek-chat` (DeepSeek-V3): Diagnósticos ágeis em segundos.
   - `deepseek-reasoner` (DeepSeek-R1): Raciocínio aprofundado (*chain-of-thought*) para intervenções estruturais.
@@ -82,9 +77,7 @@ O mod foi construído sob uma premissa inegociável de **Segurança Estrita de D
 4. Clique em **`🛠 Aplicar Resolução Municipal`** para realizar a intervenção imediata no local.
 
 ### 3.4 Log de Correções, Monitoramento de 10 Minutos e Soluções Alternativas
-1. Toda ação aplicada é enviada automaticamente para o **Log de Auditoria**.
-2. O cronômetro acompanha o tempo decorrido em tempo real (`00:00` -> `10:00`).
-3. Se a simulação do jogo resolver o problema, o status passa para **`Resolvido`**.
+
 4. Se o problema **continuar após mais de 10 minutos**:
    - O status muda para **`⚠️ Persiste (>10 min: MM:SS)`**.
    - O botão **`💡 Pesquisar Solução Alternativa com IA`** fica disponível.
@@ -125,7 +118,7 @@ dotnet build "Source/TrafficAIOptimizer.sln"
 ```powershell
 dotnet test "Source/TrafficAIOptimizer.sln"
 ```
-*Status Atual:* **29 testes aprovados, 0 falhas**.
+*Status Atual:* **23 testes aprovados, 0 falhas**.
 
 ---
 
