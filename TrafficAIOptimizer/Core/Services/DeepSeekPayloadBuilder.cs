@@ -29,7 +29,7 @@ namespace TrafficAIOptimizer.Core.Services
 
             string langInstruction = LocalizationManager.GetAiLanguageInstruction();
             string systemPrompt = string.Format(
-                "Você é um engenheiro de tráfego sênior especialista no jogo Cities: Skylines 1 (Sunset Harbor). Analise os gargalos recebidos. {0} Para cada gargalo (identificado por NodeId), forneça: CAUSA (uma frase), SOLUCAO (orientação de engenharia viária para o jogador) e ACAO_AUTO (uma das opções: REMOVE_TRAFFIC_LIGHT, ADD_TRAFFIC_LIGHT, CLEAR_STUCK_VEHICLES ou NONE).",
+                "Você é um engenheiro de tráfego sênior especialista na simulação de Cities: Skylines 1 (Sunset Harbor). Você conhece as limitações da IA nativa do jogo (veículos calculam a rota no momento do spawn e frequentemente andam em fila indiana ignorando faixas vazias se precisarem virar quilômetros adiante). {0} Para cada gargalo (identificado por NodeId), se FilaIndiana=SIM ou Faixas>=2, recomende a Matemática de Faixas (Lane Mathematics: divisão de faixas 3->2+1 com faixas de aceleração/desaceleração, rotatórias ou ativação do TM:PE Advanced Vehicle AI/Lane Connector). Forneça: CAUSA (uma frase identificando a causa raiz), SOLUCAO (orientação prática de engenharia viária) e ACAO_AUTO (uma das opções: REDISTRIBUTE_LANES, REMOVE_TRAFFIC_LIGHT, ADD_TRAFFIC_LIGHT, CLEAR_STUCK_VEHICLES ou NONE).",
                 langInstruction
             );
 
@@ -40,10 +40,12 @@ namespace TrafficAIOptimizer.Core.Services
                 var b = bottlenecks[i];
                 userContent.AppendFormat(
                     CultureInfo.InvariantCulture,
-                    "Gargalo #{0}: [NodeId: {1}, Via: {2}, Score: {3:0.0}, VelMedia: {4:0}%, Veiculos: {5}, Bloqueados: {6}, Semaforo: {7}, ViasConectadas: {8}]\n",
+                    "Gargalo #{0}: [NodeId: {1}, Via: {2}, Faixas: {3}, FilaIndiana: {4}, Score: {5:0.0}, VelMedia: {6:0}%, Veiculos: {7}, Bloqueados: {8}, Semaforo: {9}, ViasConectadas: {10}]\n",
                     i + 1,
                     b.NodeId,
                     b.RoadName,
+                    b.LaneCount,
+                    b.IsSingleLaneCongestion ? "SIM" : "NAO",
                     b.CongestionScore,
                     b.AverageSpeedPercent,
                     b.VehicleCount,
@@ -52,7 +54,7 @@ namespace TrafficAIOptimizer.Core.Services
                     b.ConnectedSegmentsCount
                 );
             }
-            userContent.Append("\nFormate a resposta estritamente assim para cada gargalo:\nNODE: <NodeId>\nCAUSA: <texto>\nSOLUCAO: <texto>\nACAO_AUTO: <REMOVE_TRAFFIC_LIGHT|ADD_TRAFFIC_LIGHT|CLEAR_STUCK_VEHICLES|NONE>");
+            userContent.Append("\nFormate a resposta estritamente assim para cada gargalo:\nNODE: <NodeId>\nCAUSA: <texto>\nSOLUCAO: <texto>\nACAO_AUTO: <REDISTRIBUTE_LANES|REMOVE_TRAFFIC_LIGHT|ADD_TRAFFIC_LIGHT|CLEAR_STUCK_VEHICLES|NONE>");
 
             return BuildEnvelope(systemPrompt, userContent.ToString(), model, provider, 0.3);
         }

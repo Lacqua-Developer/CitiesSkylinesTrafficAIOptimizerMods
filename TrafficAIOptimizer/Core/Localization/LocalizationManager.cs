@@ -316,6 +316,20 @@ namespace TrafficAIOptimizer.Core.Localization
                 [AppLanguage.French] = "⚡ Appliquer la Solution Alternative",
                 [AppLanguage.Spanish] = "⚡ Aplicar Solución Alternativa"
             },
+            ["AntiSingleLaneBtn"] = new Dictionary<AppLanguage, string>
+            {
+                [AppLanguage.Portuguese] = "⚡ Redistribuir Faixas & Re-rotear (Anti-Fila)",
+                [AppLanguage.English] = "⚡ Redistribute Lanes & Reroute (Anti-Single Lane)",
+                [AppLanguage.French] = "⚡ Redistribuer Voies & Re-router (Anti-File)",
+                [AppLanguage.Spanish] = "⚡ Redistribuir Carriles & Re-enrutar (Anti-Fila)"
+            },
+            ["SingleLaneBadge"] = new Dictionary<AppLanguage, string>
+            {
+                [AppLanguage.Portuguese] = "Fila Indiana ⚠️ ({0} faixas)",
+                [AppLanguage.English] = "Single Lane ⚠️ ({0} lanes)",
+                [AppLanguage.French] = "File Indienne ⚠️ ({0} voies)",
+                [AppLanguage.Spanish] = "Fila India ⚠️ ({0} carriles)"
+            },
 
             // Placeholders e Mensagens de Detalhe
             ["SelectBottleneckHint"] = new Dictionary<AppLanguage, string>

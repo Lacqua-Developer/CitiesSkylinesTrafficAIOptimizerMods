@@ -126,6 +126,20 @@ namespace TrafficAIOptimizer.Analysis
                     roadName = info.GetUncheckedLocalizedTitle();
                 }
 
+                int laneCount = 0;
+                if (info.m_lanes != null)
+                {
+                    for (int l = 0; l < info.m_lanes.Length; l++)
+                    {
+                        if ((info.m_lanes[l].m_laneType & (NetInfo.LaneType.Vehicle | NetInfo.LaneType.TransportVehicle)) != 0)
+                        {
+                            laneCount++;
+                        }
+                    }
+                }
+
+                bool isSingleLane = (laneCount >= 2 && (stuckCount >= 2 || (vehicleCount >= 3 && speedPercent < 45f)));
+
                 TrafficBottleneck bottleneck = new TrafficBottleneck
                 {
                     NodeId = criticalNode,
@@ -138,7 +152,9 @@ namespace TrafficAIOptimizer.Analysis
                     StuckVehicleCount = stuckCount,
                     HasTrafficLight = hasTrafficLight,
                     ConnectedSegmentsCount = connectedSegs.Count,
-                    ConnectedSegmentIds = connectedSegs
+                    ConnectedSegmentIds = connectedSegs,
+                    LaneCount = laneCount,
+                    IsSingleLaneCongestion = isSingleLane
                 };
 
                 bottlenecks.Add(bottleneck);

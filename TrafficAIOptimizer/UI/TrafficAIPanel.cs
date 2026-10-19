@@ -65,6 +65,7 @@ namespace TrafficAIOptimizer.UI
         private UILabel _trafficDetailCause;
         private UILabel _trafficDetailRec;
         private UIButton _applyTrafficFixBtn;
+        private UIButton _redistributeLanesBtn;
 
         // --- Controles de Alertas da Cidade ---
         private UIPanel _cityAlertsTabPanel;
@@ -379,6 +380,7 @@ namespace TrafficAIOptimizer.UI
             if (_clearLogBtn != null) _clearLogBtn.text = LocalizationManager.Get("ClearHistory");
 
             if (_applyTrafficFixBtn != null && _selectedBottleneck == null) _applyTrafficFixBtn.text = LocalizationManager.Get("ApplyTrafficFix");
+            if (_redistributeLanesBtn != null) _redistributeLanesBtn.text = LocalizationManager.Get("AntiSingleLaneBtn");
             if (_applyAlertFixBtn != null && _selectedAlert == null) _applyAlertFixBtn.text = LocalizationManager.Get("ApplyCityAlertFix");
             if (_requestAlternativeBtn != null) _requestAlternativeBtn.text = LocalizationManager.Get("RequestAlternativeBtn");
             if (_applyAlternativeBtn != null) _applyAlternativeBtn.text = LocalizationManager.Get("ApplyAlternativeBtn");
@@ -491,7 +493,7 @@ namespace TrafficAIOptimizer.UI
 
             _applyTrafficFixBtn = detailsPanel.AddUIComponent<UIButton>();
             _applyTrafficFixBtn.text = LocalizationManager.Get("ApplyTrafficFix");
-            _applyTrafficFixBtn.width = 280f;
+            _applyTrafficFixBtn.width = 270f;
             _applyTrafficFixBtn.height = 32f;
             _applyTrafficFixBtn.relativePosition = new Vector3(12f, 175f);
             _applyTrafficFixBtn.normalBgSprite = "ButtonMenu";
@@ -500,6 +502,19 @@ namespace TrafficAIOptimizer.UI
             _applyTrafficFixBtn.textColor = new Color32(255, 215, 0, 255);
             _applyTrafficFixBtn.isVisible = false;
             _applyTrafficFixBtn.eventClick += (c, e) => OnApplyTrafficFixClicked();
+
+            _redistributeLanesBtn = detailsPanel.AddUIComponent<UIButton>();
+            _redistributeLanesBtn.text = LocalizationManager.Get("AntiSingleLaneBtn");
+            _redistributeLanesBtn.width = 295f;
+            _redistributeLanesBtn.height = 32f;
+            _redistributeLanesBtn.relativePosition = new Vector3(290f, 175f);
+            _redistributeLanesBtn.normalBgSprite = "ButtonMenu";
+            _redistributeLanesBtn.hoveredBgSprite = "ButtonMenuHovered";
+            _redistributeLanesBtn.textScale = 0.82f;
+            _redistributeLanesBtn.textColor = new Color32(100, 230, 255, 255);
+            _redistributeLanesBtn.tooltip = "Re-roteia veículos estagnados e balanceia as setas de faixa para forçar o uso de faixas vazias (Anti-Fila Indiana).";
+            _redistributeLanesBtn.isVisible = false;
+            _redistributeLanesBtn.eventClick += (c, e) => OnRedistributeLanesClicked();
         }
 
         // ==========================================
@@ -835,8 +850,10 @@ namespace TrafficAIOptimizer.UI
                 itemBtn.textScale = 0.74f;
                 itemBtn.textHorizontalAlignment = UIHorizontalAlignment.Left;
 
-                string line1 = string.Format("#{0} 🚦 {1} (Nó #{2})", i + 1, b.RoadName, b.NodeId);
-                string line2 = string.Format("   Score: {0} | Vel Média: {1}% | Semáforo: {2} | Parados: {3}",
+                string singleLaneBadge = b.IsSingleLaneCongestion ? " [Fila Indiana ⚠️]" : "";
+                string line1 = string.Format("#{0} 🚦 {1} (Nó #{2}){3}", i + 1, b.RoadName, b.NodeId, singleLaneBadge);
+                string line2 = string.Format("   Faixas: {0} | Score: {1} | Vel: {2}% | Sinal: {3} | Parados: {4}",
+                    b.LaneCount,
                     b.CongestionScore,
                     b.AverageSpeedPercent,
                     b.HasTrafficLight ? "Sim" : "Não",
@@ -844,9 +861,11 @@ namespace TrafficAIOptimizer.UI
                 );
                 itemBtn.text = " " + line1 + "\n" + line2;
                 itemBtn.tooltip = string.Format(
-                    "{0} (Nó #{1})\nScore: {2} | Velocidade: {3}%\nSemáforo: {4} | Veículos Parados: {5}\nCausa: {6}\nRecomendação: {7}",
+                    "{0} (Nó #{1})\nFaixas: {2} | Fila Indiana: {3}\nScore: {4} | Velocidade: {5}%\nSemáforo: {6} | Veículos Parados: {7}\nCausa: {8}\nRecomendação: {9}",
                     b.RoadName,
                     b.NodeId,
+                    b.LaneCount,
+                    b.IsSingleLaneCongestion ? "Detectada ⚠️" : "Não",
                     b.CongestionScore,
                     b.AverageSpeedPercent,
                     b.HasTrafficLight ? "Presente" : "Ausente",
@@ -891,6 +910,34 @@ namespace TrafficAIOptimizer.UI
             {
                 _applyTrafficFixBtn.isVisible = true;
                 _applyTrafficFixBtn.text = b.HasTrafficLight ? "⚡ Remover Semáforo & Desobstruir" : "⚡ Adicionar Semáforo & Otimizar";
+            }
+
+            if (_redistributeLanesBtn != null)
+            {
+                _redistributeLanesBtn.isVisible = true;
+                _redistributeLanesBtn.text = LocalizationManager.Get("AntiSingleLaneBtn");
+            }
+        }
+
+        private void OnRedistributeLanesClicked()
+        {
+            if (_selectedBottleneck == null) return;
+
+            int rerouted = TrafficActionExecutor.RedistributeLanesAndReroute(_selectedBottleneck.SegmentId, _selectedBottleneck.NodeId);
+            string msg = string.Format("Anti-Fila Indiana executado: {0} veículo(s) re-roteados dinamicamente e faixas balanceadas!", rerouted);
+            SetStatus(msg, Color.green);
+
+            CorrectionLogManager.Instance.RecordCorrection(
+                _selectedBottleneck.NodeId,
+                CorrectionTargetType.Traffic,
+                _selectedBottleneck.RoadName,
+                "Fila Indiana / Rota Estática",
+                "Re-roteamento dinâmico de veículos e balanceamento de faixas"
+            );
+
+            if (_redistributeLanesBtn != null)
+            {
+                _redistributeLanesBtn.isVisible = false;
             }
         }
 
@@ -948,6 +995,7 @@ namespace TrafficAIOptimizer.UI
             if (_trafficDetailCause != null) _trafficDetailCause.text = "";
             if (_trafficDetailRec != null) _trafficDetailRec.text = "";
             if (_applyTrafficFixBtn != null) _applyTrafficFixBtn.isVisible = false;
+            if (_redistributeLanesBtn != null) _redistributeLanesBtn.isVisible = false;
 
             SetStatus("Análise de tráfego limpa.", Color.white);
         }

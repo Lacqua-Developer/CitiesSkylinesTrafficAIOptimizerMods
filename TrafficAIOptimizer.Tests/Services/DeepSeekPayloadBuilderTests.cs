@@ -53,5 +53,33 @@ namespace TrafficAIOptimizer.Tests.Services
             Assert.That(payload, Does.Contain("Avenida Central"));
             Assert.That(payload, Does.Contain("Score: 75.5"));
         }
+
+        [Test]
+        public void GivenSingleLaneBottleneck_WhenPayloadBuilt_ThenShouldContainSingleLaneAndLaneCount()
+        {
+            var list = new List<TrafficBottleneck>
+            {
+                new TrafficBottleneck
+                {
+                    NodeId = 101,
+                    RoadName = "Rodovia dos Imigrantes",
+                    LaneCount = 3,
+                    IsSingleLaneCongestion = true,
+                    CongestionScore = 88.0f,
+                    AverageSpeedPercent = 15f,
+                    VehicleCount = 12,
+                    StuckVehicleCount = 5,
+                    HasTrafficLight = false,
+                    ConnectedSegmentsCount = 2
+                }
+            };
+
+            string payload = _builder.BuildChatPayload(list, "deepseek-chat");
+
+            Assert.IsNotNull(payload);
+            Assert.That(payload, Does.Contain("Faixas: 3"));
+            Assert.That(payload, Does.Contain("FilaIndiana: SIM"));
+            Assert.That(payload, Does.Contain("REDISTRIBUTE_LANES"));
+        }
     }
 }

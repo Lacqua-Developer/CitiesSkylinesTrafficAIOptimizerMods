@@ -19,6 +19,8 @@ namespace TrafficAIOptimizer.Analysis
         public bool HasTrafficLight { get; set; }
         public int ConnectedSegmentsCount { get; set; }
         public List<ushort> ConnectedSegmentIds { get; set; } = new List<ushort>();
+        public int LaneCount { get; set; }
+        public bool IsSingleLaneCongestion { get; set; }
 
         // Resposta da IA para este gargalo
         public string AIRootCause { get; set; }
