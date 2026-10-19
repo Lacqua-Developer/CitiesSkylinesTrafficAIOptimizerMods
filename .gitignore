@@ -1,0 +1,21 @@
+## Visual Studio & Rider
+.vs/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+.idea/
+
+## Build Artifacts
+[Bb]in/
+[Oo]bj/
+*.dll.mdb
+*.pdb
+
+## Logs and diagnostics
+*.log
+output_log.txt
+
+## OS generated
+.DS_Store
+Thumbs.db

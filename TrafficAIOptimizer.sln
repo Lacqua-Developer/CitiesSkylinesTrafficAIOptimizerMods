@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrafficAIOptimizer", "TrafficAIOptimizer\TrafficAIOptimizer.csproj", "{D9F0A347-C6CC-4F62-93AA-30F2B0F61445}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrafficAIOptimizer.Tests", "TrafficAIOptimizer.Tests\TrafficAIOptimizer.Tests.csproj", "{43EAE9AE-5833-45A6-A7A9-46F216C09A09}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D9F0A347-C6CC-4F62-93AA-30F2B0F61445}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9F0A347-C6CC-4F62-93AA-30F2B0F61445}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9F0A347-C6CC-4F62-93AA-30F2B0F61445}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D9F0A347-C6CC-4F62-93AA-30F2B0F61445}.Debug|x64.Build.0 = Debug|Any CPU
+		{D9F0A347-C6CC-4F62-93AA-30F2B0F61445}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D9F0A347-C6CC-4F62-93AA-30F2B0F61445}.Debug|x86.Build.0 = Debug|Any CPU
+		{D9F0A347-C6CC-4F62-93AA-30F2B0F61445}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9F0A347-C6CC-4F62-93AA-30F2B0F61445}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9F0A347-C6CC-4F62-93AA-30F2B0F61445}.Release|x64.ActiveCfg = Release|Any CPU
+		{D9F0A347-C6CC-4F62-93AA-30F2B0F61445}.Release|x64.Build.0 = Release|Any CPU
+		{D9F0A347-C6CC-4F62-93AA-30F2B0F61445}.Release|x86.ActiveCfg = Release|Any CPU
+		{D9F0A347-C6CC-4F62-93AA-30F2B0F61445}.Release|x86.Build.0 = Release|Any CPU
+		{43EAE9AE-5833-45A6-A7A9-46F216C09A09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43EAE9AE-5833-45A6-A7A9-46F216C09A09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43EAE9AE-5833-45A6-A7A9-46F216C09A09}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{43EAE9AE-5833-45A6-A7A9-46F216C09A09}.Debug|x64.Build.0 = Debug|Any CPU
+		{43EAE9AE-5833-45A6-A7A9-46F216C09A09}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{43EAE9AE-5833-45A6-A7A9-46F216C09A09}.Debug|x86.Build.0 = Debug|Any CPU
+		{43EAE9AE-5833-45A6-A7A9-46F216C09A09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43EAE9AE-5833-45A6-A7A9-46F216C09A09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43EAE9AE-5833-45A6-A7A9-46F216C09A09}.Release|x64.ActiveCfg = Release|Any CPU
+		{43EAE9AE-5833-45A6-A7A9-46F216C09A09}.Release|x64.Build.0 = Release|Any CPU
+		{43EAE9AE-5833-45A6-A7A9-46F216C09A09}.Release|x86.ActiveCfg = Release|Any CPU
+		{43EAE9AE-5833-45A6-A7A9-46F216C09A09}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
