@@ -122,6 +122,111 @@ namespace TrafficAIOptimizer.Integration
         }
 
         /// <summary>
+        /// Aplica resoluções automáticas para todos os alertas municipais da lista em lote,
+        /// sem necessidade de análise manual individual.
+        /// </summary>
+        public static int ApplyAllCityAlerts(System.Collections.Generic.List<CityAlert> alerts)
+        {
+            if (alerts == null || alerts.Count == 0) return 0;
+            if (!Singleton<SimulationManager>.exists || !Singleton<BuildingManager>.exists) return 0;
+
+            int count = 0;
+            Singleton<SimulationManager>.instance.AddAction(() =>
+            {
+                try
+                {
+                    BuildingManager bm = Singleton<BuildingManager>.instance;
+                    foreach (var alert in alerts)
+                    {
+                        if (alert == null || alert.BuildingId == 0) continue;
+                        ushort bId = alert.BuildingId;
+
+                        if ((bm.m_buildings.m_buffer[bId].m_flags & Building.Flags.Created) == 0) continue;
+
+                        string executedActionDesc = "Correção Urbana em Lote";
+
+                        switch (alert.ProblemType)
+                        {
+                            case CityProblemType.Death:
+                                bm.m_buildings.m_buffer[bId].m_problems &= ~Notification.Problem.Death;
+                                bm.m_buildings.m_buffer[bId].m_deathProblemTimer = 0;
+                                executedActionDesc = "Serviço funerário emergencial despachado";
+                                break;
+
+                            case CityProblemType.NoCustomers:
+                                bm.m_buildings.m_buffer[bId].m_problems &= ~(Notification.Problem.NoCustomers | Notification.Problem.NoGoods);
+                                bm.m_buildings.m_buffer[bId].m_incomingProblemTimer = 0;
+                                executedActionDesc = "Incentivo comercial e atração de clientes ativados";
+                                break;
+
+                            case CityProblemType.NoWorkers:
+                                bm.m_buildings.m_buffer[bId].m_problems &= ~(Notification.Problem.NoWorkers | Notification.Problem.NoEducatedWorkers);
+                                bm.m_buildings.m_buffer[bId].m_workerProblemTimer = 0;
+                                executedActionDesc = "Recrutamento municipal de trabalhadores efetuado";
+                                break;
+
+                            case CityProblemType.Water:
+                                bm.m_buildings.m_buffer[bId].m_problems &= ~(Notification.Problem.Water | Notification.Problem.WaterNotConnected);
+                                bm.m_buildings.m_buffer[bId].m_waterProblemTimer = 0;
+                                executedActionDesc = "Rede hidráulica equalizada e suprimento restaurado";
+                                break;
+
+                            case CityProblemType.Electricity:
+                                bm.m_buildings.m_buffer[bId].m_problems &= ~(Notification.Problem.Electricity | Notification.Problem.ElectricityNotConnected);
+                                bm.m_buildings.m_buffer[bId].m_electricityProblemTimer = 0;
+                                executedActionDesc = "Interligação elétrica de emergência concluída";
+                                break;
+
+                            case CityProblemType.Sewage:
+                                bm.m_buildings.m_buffer[bId].m_problems &= ~Notification.Problem.Sewage;
+                                bm.m_buildings.m_buffer[bId].m_waterProblemTimer = 0;
+                                executedActionDesc = "Desobstrução do coletor de esgoto realizada";
+                                break;
+
+                            case CityProblemType.Garbage:
+                                bm.m_buildings.m_buffer[bId].m_problems &= ~Notification.Problem.Garbage;
+                                bm.m_buildings.m_buffer[bId].m_garbageBuffer = 0;
+                                executedActionDesc = "Coleta prioritária de resíduos executada";
+                                break;
+
+                            case CityProblemType.Fire:
+                                bm.m_buildings.m_buffer[bId].m_problems &= ~(Notification.Problem.Fire | Notification.Problem.MajorProblem);
+                                bm.m_buildings.m_buffer[bId].m_fireIntensity = 0;
+                                executedActionDesc = "Combate a chamas concluído com sucesso";
+                                break;
+
+                            case CityProblemType.Crime:
+                                bm.m_buildings.m_buffer[bId].m_problems &= ~Notification.Problem.Crime;
+                                bm.m_buildings.m_buffer[bId].m_crimeBuffer = 0;
+                                executedActionDesc = "Ronda policial intensificada e ordem restabelecida";
+                                break;
+
+                            default:
+                                bm.m_buildings.m_buffer[bId].m_problems = Notification.Problem.None;
+                                executedActionDesc = "Regularização municipal de serviços";
+                                break;
+                        }
+
+                        CorrectionLogManager.Instance.RecordCorrection(
+                            alert.BuildingId,
+                            CorrectionTargetType.CityAlert,
+                            alert.BuildingName,
+                            alert.ProblemDescription,
+                            executedActionDesc
+                        );
+                        count++;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning("[TrafficAI] Falha na aplicação em lote de alertas municipais: " + ex.Message);
+                }
+            });
+
+            return alerts.Count;
+        }
+
+        /// <summary>
         /// Aplica uma intervenção alternativa avançada recomendada pela IA caso o problema persista > 10 min.
         /// </summary>
         public static string ApplyAlternativeAction(CorrectionLogEntry entry)

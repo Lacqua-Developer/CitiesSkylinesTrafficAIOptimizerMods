@@ -239,12 +239,26 @@ namespace TrafficAIOptimizer.Core.Localization
                 [AppLanguage.French] = "⚡ Analyser le Trafic",
                 [AppLanguage.Spanish] = "⚡ Analizar Tráfico"
             },
+            ["FixAllTrafficBtn"] = new Dictionary<AppLanguage, string>
+            {
+                [AppLanguage.Portuguese] = "🚀 Corrigir Toda a Lista",
+                [AppLanguage.English] = "🚀 Fix All Bottlenecks",
+                [AppLanguage.French] = "🚀 Corriger Toute la Liste",
+                [AppLanguage.Spanish] = "🚀 Corregir Toda la Lista"
+            },
             ["AnalyzeAlerts"] = new Dictionary<AppLanguage, string>
             {
-                [AppLanguage.Portuguese] = "⚡ Analisar Alertas Urbanos",
-                [AppLanguage.English] = "⚡ Analyze City Alerts",
+                [AppLanguage.Portuguese] = "⚡ Analisar Alertas",
+                [AppLanguage.English] = "⚡ Analyze Alerts",
                 [AppLanguage.French] = "⚡ Analyser les Alertes",
                 [AppLanguage.Spanish] = "⚡ Analizar Alertas"
+            },
+            ["FixAllAlertsBtn"] = new Dictionary<AppLanguage, string>
+            {
+                [AppLanguage.Portuguese] = "🚀 Corrigir Toda a Lista",
+                [AppLanguage.English] = "🚀 Fix All City Alerts",
+                [AppLanguage.French] = "🚀 Corriger Toutes les Alertes",
+                [AppLanguage.Spanish] = "🚀 Corregir Todas las Alertas"
             },
             ["Reanalyze"] = new Dictionary<AppLanguage, string>
             {

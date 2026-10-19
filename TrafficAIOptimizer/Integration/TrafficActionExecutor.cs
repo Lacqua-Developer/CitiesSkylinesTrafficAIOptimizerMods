@@ -116,6 +116,82 @@ namespace TrafficAIOptimizer.Integration
         }
 
         /// <summary>
+        /// Aplica correções viárias automaticamente em todos os gargalos da lista em lote.
+        /// Caso a IA não tenha sugerido ações, aplica heurística de desobstrução e balanceamento semafórico imediato.
+        /// </summary>
+        public static int ApplyAllBottlenecks(System.Collections.Generic.List<TrafficBottleneck> bottlenecks)
+        {
+            if (bottlenecks == null || bottlenecks.Count == 0) return 0;
+            if (!Singleton<SimulationManager>.exists || !Singleton<NetManager>.exists) return 0;
+
+            int count = 0;
+            Singleton<SimulationManager>.instance.AddAction(() =>
+            {
+                try
+                {
+                    NetManager netManager = Singleton<NetManager>.instance;
+                    foreach (var b in bottlenecks)
+                    {
+                        if (b == null || b.NodeId == 0) continue;
+                        ushort nodeId = b.NodeId;
+
+                        if ((netManager.m_nodes.m_buffer[nodeId].m_flags & NetNode.Flags.Created) == 0) continue;
+
+                        string resultMessage = "";
+
+                        // Heurística automática caso a lista não tenha passado por análise manual prévia da IA
+                        if (b.SuggestedActions.Count == 0)
+                        {
+                            if (b.HasTrafficLight && b.CongestionScore > 50)
+                            {
+                                b.SuggestedActions.Add("REMOVE_TRAFFIC_LIGHT");
+                            }
+                            else if (!b.HasTrafficLight && b.CongestionScore > 70 && b.ConnectedSegmentsCount >= 3)
+                            {
+                                b.SuggestedActions.Add("ADD_TRAFFIC_LIGHT");
+                            }
+                            b.SuggestedActions.Add("CLEAR_STUCK_VEHICLES");
+                        }
+
+                        if (b.SuggestedActions.Contains("REMOVE_TRAFFIC_LIGHT"))
+                        {
+                            SetTrafficLight(nodeId, false);
+                            b.HasTrafficLight = false;
+                            resultMessage += "Semáforo desativado. ";
+                        }
+                        else if (b.SuggestedActions.Contains("ADD_TRAFFIC_LIGHT"))
+                        {
+                            SetTrafficLight(nodeId, true);
+                            b.HasTrafficLight = true;
+                            resultMessage += "Semáforo adicionado. ";
+                        }
+
+                        if (b.SuggestedActions.Contains("CLEAR_STUCK_VEHICLES") || b.StuckVehicleCount > 0)
+                        {
+                            int cleared = ClearStuckVehiclesNearNode(nodeId);
+                            resultMessage += string.Format("{0} veículo(s) travados removidos. ", cleared);
+                        }
+
+                        CorrectionLogManager.Instance.RecordCorrection(
+                            b.NodeId,
+                            CorrectionTargetType.Traffic,
+                            b.RoadName,
+                            "Congestionamento de Tráfego",
+                            string.IsNullOrEmpty(resultMessage) ? "Otimização de semáforo e fluxo" : resultMessage.Trim()
+                        );
+                        count++;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning("[TrafficAI] Falha na aplicação em lote de tráfego: " + ex.Message);
+                }
+            });
+
+            return bottlenecks.Count;
+        }
+
+        /// <summary>
         /// Habilita ou desabilita semáforos no nó viário.
         /// </summary>
         public static void SetTrafficLight(ushort nodeId, bool enable)

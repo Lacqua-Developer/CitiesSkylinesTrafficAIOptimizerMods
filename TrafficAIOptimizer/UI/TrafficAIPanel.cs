@@ -55,6 +55,7 @@ namespace TrafficAIOptimizer.UI
         // --- Controles de Tráfego ---
         private UIPanel _trafficTabPanel;
         private UIButton _analyzeTrafficBtn;
+        private UIButton _fixAllTrafficBtn;
         private UIButton _reanalyzeTrafficBtn;
         private UIButton _clearTrafficBtn;
         private UIPanel _trafficResultsContainer;
@@ -68,6 +69,7 @@ namespace TrafficAIOptimizer.UI
         // --- Controles de Alertas da Cidade ---
         private UIPanel _cityAlertsTabPanel;
         private UIButton _analyzeAlertsBtn;
+        private UIButton _fixAllAlertsBtn;
         private UIButton _reanalyzeAlertsBtn;
         private UIButton _clearAlertsBtn;
         private UIPanel _alertsResultsContainer;
@@ -364,10 +366,12 @@ namespace TrafficAIOptimizer.UI
             if (_tabLogBtn != null) _tabLogBtn.text = LocalizationManager.Get("TabLog");
 
             if (_analyzeTrafficBtn != null) _analyzeTrafficBtn.text = LocalizationManager.Get("AnalyzeTraffic");
+            if (_fixAllTrafficBtn != null) _fixAllTrafficBtn.text = LocalizationManager.Get("FixAllTrafficBtn");
             if (_reanalyzeTrafficBtn != null) _reanalyzeTrafficBtn.text = LocalizationManager.Get("Reanalyze");
             if (_clearTrafficBtn != null) _clearTrafficBtn.text = LocalizationManager.Get("Clear");
 
             if (_analyzeAlertsBtn != null) _analyzeAlertsBtn.text = LocalizationManager.Get("AnalyzeAlerts");
+            if (_fixAllAlertsBtn != null) _fixAllAlertsBtn.text = LocalizationManager.Get("FixAllAlertsBtn");
             if (_reanalyzeAlertsBtn != null) _reanalyzeAlertsBtn.text = LocalizationManager.Get("Reanalyze");
             if (_clearAlertsBtn != null) _clearAlertsBtn.text = LocalizationManager.Get("Clear");
 
@@ -401,7 +405,7 @@ namespace TrafficAIOptimizer.UI
 
             _analyzeTrafficBtn = _trafficTabPanel.AddUIComponent<UIButton>();
             _analyzeTrafficBtn.text = LocalizationManager.Get("AnalyzeTraffic");
-            _analyzeTrafficBtn.width = 195f;
+            _analyzeTrafficBtn.width = 135f;
             _analyzeTrafficBtn.height = 34f;
             _analyzeTrafficBtn.relativePosition = new Vector3(0f, localY);
             _analyzeTrafficBtn.normalBgSprite = "ButtonMenu";
@@ -410,11 +414,23 @@ namespace TrafficAIOptimizer.UI
             _analyzeTrafficBtn.textColor = new Color32(100, 255, 100, 255);
             _analyzeTrafficBtn.eventClick += (c, e) => OnAnalyzeTrafficClicked();
 
+            _fixAllTrafficBtn = _trafficTabPanel.AddUIComponent<UIButton>();
+            _fixAllTrafficBtn.text = LocalizationManager.Get("FixAllTrafficBtn");
+            _fixAllTrafficBtn.width = 170f;
+            _fixAllTrafficBtn.height = 34f;
+            _fixAllTrafficBtn.relativePosition = new Vector3(142f, localY);
+            _fixAllTrafficBtn.normalBgSprite = "ButtonMenu";
+            _fixAllTrafficBtn.hoveredBgSprite = "ButtonMenuHovered";
+            _fixAllTrafficBtn.textScale = 0.82f;
+            _fixAllTrafficBtn.textColor = new Color32(255, 215, 0, 255);
+            _fixAllTrafficBtn.tooltip = "Aplica correções e otimizações viárias em todos os gargalos da lista sem necessidade de análise individual.";
+            _fixAllTrafficBtn.eventClick += (c, e) => OnFixAllTrafficClicked();
+
             _reanalyzeTrafficBtn = _trafficTabPanel.AddUIComponent<UIButton>();
             _reanalyzeTrafficBtn.text = LocalizationManager.Get("Reanalyze");
-            _reanalyzeTrafficBtn.width = 175f;
+            _reanalyzeTrafficBtn.width = 130f;
             _reanalyzeTrafficBtn.height = 34f;
-            _reanalyzeTrafficBtn.relativePosition = new Vector3(205f, localY);
+            _reanalyzeTrafficBtn.relativePosition = new Vector3(320f, localY);
             _reanalyzeTrafficBtn.normalBgSprite = "ButtonMenu";
             _reanalyzeTrafficBtn.hoveredBgSprite = "ButtonMenuHovered";
             _reanalyzeTrafficBtn.textScale = 0.85f;
@@ -423,9 +439,9 @@ namespace TrafficAIOptimizer.UI
 
             _clearTrafficBtn = _trafficTabPanel.AddUIComponent<UIButton>();
             _clearTrafficBtn.text = LocalizationManager.Get("Clear");
-            _clearTrafficBtn.width = 175f;
+            _clearTrafficBtn.width = 135f;
             _clearTrafficBtn.height = 34f;
-            _clearTrafficBtn.relativePosition = new Vector3(390f, localY);
+            _clearTrafficBtn.relativePosition = new Vector3(458f, localY);
             _clearTrafficBtn.normalBgSprite = "ButtonMenu";
             _clearTrafficBtn.hoveredBgSprite = "ButtonMenuHovered";
             _clearTrafficBtn.textScale = 0.85f;
@@ -500,7 +516,7 @@ namespace TrafficAIOptimizer.UI
 
             _analyzeAlertsBtn = _cityAlertsTabPanel.AddUIComponent<UIButton>();
             _analyzeAlertsBtn.text = LocalizationManager.Get("AnalyzeAlerts");
-            _analyzeAlertsBtn.width = 210f;
+            _analyzeAlertsBtn.width = 135f;
             _analyzeAlertsBtn.height = 34f;
             _analyzeAlertsBtn.relativePosition = new Vector3(0f, localY);
             _analyzeAlertsBtn.normalBgSprite = "ButtonMenu";
@@ -509,11 +525,23 @@ namespace TrafficAIOptimizer.UI
             _analyzeAlertsBtn.textColor = new Color32(255, 180, 80, 255);
             _analyzeAlertsBtn.eventClick += (c, e) => OnAnalyzeAlertsClicked();
 
+            _fixAllAlertsBtn = _cityAlertsTabPanel.AddUIComponent<UIButton>();
+            _fixAllAlertsBtn.text = LocalizationManager.Get("FixAllAlertsBtn");
+            _fixAllAlertsBtn.width = 170f;
+            _fixAllAlertsBtn.height = 34f;
+            _fixAllAlertsBtn.relativePosition = new Vector3(142f, localY);
+            _fixAllAlertsBtn.normalBgSprite = "ButtonMenu";
+            _fixAllAlertsBtn.hoveredBgSprite = "ButtonMenuHovered";
+            _fixAllAlertsBtn.textScale = 0.82f;
+            _fixAllAlertsBtn.textColor = new Color32(255, 215, 0, 255);
+            _fixAllAlertsBtn.tooltip = "Aplica despacho e resolução para todos os alertas municipais da lista sem necessidade de intervenção manual.";
+            _fixAllAlertsBtn.eventClick += (c, e) => OnFixAllAlertsClicked();
+
             _reanalyzeAlertsBtn = _cityAlertsTabPanel.AddUIComponent<UIButton>();
             _reanalyzeAlertsBtn.text = LocalizationManager.Get("Reanalyze");
-            _reanalyzeAlertsBtn.width = 160f;
+            _reanalyzeAlertsBtn.width = 130f;
             _reanalyzeAlertsBtn.height = 34f;
-            _reanalyzeAlertsBtn.relativePosition = new Vector3(220f, localY);
+            _reanalyzeAlertsBtn.relativePosition = new Vector3(320f, localY);
             _reanalyzeAlertsBtn.normalBgSprite = "ButtonMenu";
             _reanalyzeAlertsBtn.hoveredBgSprite = "ButtonMenuHovered";
             _reanalyzeAlertsBtn.textScale = 0.85f;
@@ -522,9 +550,9 @@ namespace TrafficAIOptimizer.UI
 
             _clearAlertsBtn = _cityAlertsTabPanel.AddUIComponent<UIButton>();
             _clearAlertsBtn.text = LocalizationManager.Get("Clear");
-            _clearAlertsBtn.width = 175f;
+            _clearAlertsBtn.width = 135f;
             _clearAlertsBtn.height = 34f;
-            _clearAlertsBtn.relativePosition = new Vector3(390f, localY);
+            _clearAlertsBtn.relativePosition = new Vector3(458f, localY);
             _clearAlertsBtn.normalBgSprite = "ButtonMenu";
             _clearAlertsBtn.hoveredBgSprite = "ButtonMenuHovered";
             _clearAlertsBtn.textScale = 0.85f;
@@ -800,23 +828,35 @@ namespace TrafficAIOptimizer.UI
                 TrafficBottleneck b = bottlenecks[i];
                 UIButton itemBtn = _trafficResultsContainer.AddUIComponent<UIButton>();
                 itemBtn.width = _trafficResultsContainer.width - 16f;
-                itemBtn.height = 24f;
+                itemBtn.height = 36f;
                 itemBtn.relativePosition = new Vector3(8f, itemY);
                 itemBtn.normalBgSprite = "ButtonMenu";
                 itemBtn.hoveredBgSprite = "ButtonMenuHovered";
-                itemBtn.textScale = 0.75f;
+                itemBtn.textScale = 0.74f;
                 itemBtn.textHorizontalAlignment = UIHorizontalAlignment.Left;
 
-                string label = string.Format("#{0} | {1} | Score: {2} | Vel: {3}% | Sinal: {4}",
-                    i + 1,
-                    Truncate(b.RoadName, 22),
+                string line1 = string.Format("#{0} 🚦 {1} (Nó #{2})", i + 1, b.RoadName, b.NodeId);
+                string line2 = string.Format("   Score: {0} | Vel Média: {1}% | Semáforo: {2} | Parados: {3}",
                     b.CongestionScore,
                     b.AverageSpeedPercent,
-                    b.HasTrafficLight ? "Sim" : "Não"
+                    b.HasTrafficLight ? "Sim" : "Não",
+                    b.StuckVehicleCount
                 );
-                itemBtn.text = "  " + label;
+                itemBtn.text = " " + line1 + "\n" + line2;
+                itemBtn.tooltip = string.Format(
+                    "{0} (Nó #{1})\nScore: {2} | Velocidade: {3}%\nSemáforo: {4} | Veículos Parados: {5}\nCausa: {6}\nRecomendação: {7}",
+                    b.RoadName,
+                    b.NodeId,
+                    b.CongestionScore,
+                    b.AverageSpeedPercent,
+                    b.HasTrafficLight ? "Presente" : "Ausente",
+                    b.StuckVehicleCount,
+                    string.IsNullOrEmpty(b.AIRootCause) ? "Sobrecarga de tráfego" : b.AIRootCause,
+                    string.IsNullOrEmpty(b.AIRecommendation) ? "Otimizar fluxo viário" : b.AIRecommendation
+                );
+
                 itemBtn.eventClick += (c, e) => SelectBottleneck(b);
-                itemY += 26f;
+                itemY += 38f;
             }
 
             if (bottlenecks.Count > 0)
@@ -860,6 +900,32 @@ namespace TrafficAIOptimizer.UI
 
             string res = TrafficActionExecutor.ApplyBottleneckActions(_selectedBottleneck);
             SetStatus(res, Color.green);
+
+            if (_applyTrafficFixBtn != null)
+            {
+                _applyTrafficFixBtn.isVisible = false;
+            }
+        }
+
+        private void OnFixAllTrafficClicked()
+        {
+            // Se a lista não estiver carregada, detecta automaticamente sem exigir ação prévia
+            if (_currentBottlenecks == null || _currentBottlenecks.Count == 0)
+            {
+                CorrectionLogManager.Instance.ReanalyzeCorrections();
+                _currentBottlenecks = TrafficAnalyzer.DetectTopBottlenecks();
+                PopulateBottlenecksList(_currentBottlenecks);
+            }
+
+            if (_currentBottlenecks.Count == 0)
+            {
+                SetStatus(LocalizationManager.Get("NoBottlenecksFound"), Color.green);
+                return;
+            }
+
+            SetStatus(string.Format("Aplicando correções em lote nos {0} gargalos viários...", _currentBottlenecks.Count), Color.cyan);
+            int applied = TrafficActionExecutor.ApplyAllBottlenecks(_currentBottlenecks);
+            SetStatus(string.Format("Correção em lote aplicada com sucesso em {0} nós/gargalos viários!", applied), Color.green);
 
             if (_applyTrafficFixBtn != null)
             {
@@ -946,24 +1012,29 @@ namespace TrafficAIOptimizer.UI
                 CityAlert a = alerts[i];
                 UIButton itemBtn = _alertsResultsContainer.AddUIComponent<UIButton>();
                 itemBtn.width = _alertsResultsContainer.width - 16f;
-                itemBtn.height = 24f;
+                itemBtn.height = 36f;
                 itemBtn.relativePosition = new Vector3(8f, itemY);
                 itemBtn.normalBgSprite = "ButtonMenu";
                 itemBtn.hoveredBgSprite = "ButtonMenuHovered";
-                itemBtn.textScale = 0.75f;
+                itemBtn.textScale = 0.74f;
                 itemBtn.textHorizontalAlignment = UIHorizontalAlignment.Left;
 
                 string icon = GetProblemIcon(a.ProblemType);
-                string label = string.Format("#{0} {1} | {2} | {3} | Score: {4:0}",
-                    i + 1,
-                    icon,
-                    Truncate(a.BuildingName, 18),
-                    Truncate(a.ProblemDescription, 20),
-                    a.Severity
+                string line1 = string.Format("#{0} {1} {2} (Edifício #{3})", i + 1, icon, a.BuildingName, a.BuildingId);
+                string line2 = string.Format("   Problema: {0} | Gravidade: {1:0}", a.ProblemDescription, a.Severity);
+                itemBtn.text = " " + line1 + "\n" + line2;
+                itemBtn.tooltip = string.Format(
+                    "{0} (Edifício #{1})\nProblema: {2}\nGravidade: {3:0}\nCausa: {4}\nRecomendação: {5}",
+                    a.BuildingName,
+                    a.BuildingId,
+                    a.ProblemDescription,
+                    a.Severity,
+                    string.IsNullOrEmpty(a.AIRootCause) ? "Falta de atendimento urbano" : a.AIRootCause,
+                    string.IsNullOrEmpty(a.AIRecommendation) ? "Ajustar capacidade dos serviços municipais" : a.AIRecommendation
                 );
-                itemBtn.text = "  " + label;
+
                 itemBtn.eventClick += (c, e) => SelectCityAlert(a);
-                itemY += 26f;
+                itemY += 38f;
             }
 
             if (alerts.Count > 0)
@@ -1031,6 +1102,32 @@ namespace TrafficAIOptimizer.UI
             }
         }
 
+        private void OnFixAllAlertsClicked()
+        {
+            // Se a lista não estiver carregada, detecta automaticamente sem exigir ação prévia
+            if (_currentAlerts == null || _currentAlerts.Count == 0)
+            {
+                CorrectionLogManager.Instance.ReanalyzeCorrections();
+                _currentAlerts = CityAlertAnalyzer.DetectTopAlerts();
+                PopulateAlertsList(_currentAlerts);
+            }
+
+            if (_currentAlerts.Count == 0)
+            {
+                SetStatus(LocalizationManager.Get("NoAlertsFound"), Color.green);
+                return;
+            }
+
+            SetStatus(string.Format("Aplicando correções em lote nos {0} alertas municipais...", _currentAlerts.Count), Color.cyan);
+            int applied = CityActionExecutor.ApplyAllCityAlerts(_currentAlerts);
+            SetStatus(string.Format("Resolução em lote aplicada com sucesso em {0} alertas municipais!", applied), Color.green);
+
+            if (_applyAlertFixBtn != null)
+            {
+                _applyAlertFixBtn.isVisible = false;
+            }
+        }
+
         private void OnClearAlertsClicked()
         {
             ClearContainerComponents(_alertsResultsContainer);
@@ -1076,20 +1173,30 @@ namespace TrafficAIOptimizer.UI
                 CorrectionLogEntry log = logs[i];
                 UIButton itemBtn = _logResultsContainer.AddUIComponent<UIButton>();
                 itemBtn.width = _logResultsContainer.width - 16f;
-                itemBtn.height = 24f;
+                itemBtn.height = 36f;
                 itemBtn.relativePosition = new Vector3(8f, itemY);
                 itemBtn.normalBgSprite = "ButtonMenu";
                 itemBtn.hoveredBgSprite = "ButtonMenuHovered";
-                itemBtn.textScale = 0.75f;
+                itemBtn.textScale = 0.74f;
                 itemBtn.textHorizontalAlignment = UIHorizontalAlignment.Left;
 
-                string label = string.Format("#{0} | {1} | {2} | {3}",
-                    i + 1,
-                    Truncate(log.TargetName, 18),
-                    Truncate(log.ProblemDescription, 18),
-                    log.GetStatusDisplay()
+                string line1 = string.Format("#{0} 📋 {1} - {2}", i + 1, log.TargetName, log.ProblemDescription);
+                string line2 = string.Format("   Ação: {0} | Status: {1} | ⏱ {2}",
+                    log.AppliedAction,
+                    log.GetStatusDisplay(),
+                    log.GetFormattedElapsedTime()
                 );
-                itemBtn.text = "  " + label;
+                itemBtn.text = " " + line1 + "\n" + line2;
+                itemBtn.tooltip = string.Format(
+                    "{0}\nProblema: {1}\nAção Aplicada: {2}\nHorário: {3:HH:mm:ss}\nTempo Decorrido: {4}\nStatus: {5}\nSolução Alternativa: {6}",
+                    log.TargetName,
+                    log.ProblemDescription,
+                    log.AppliedAction,
+                    log.Timestamp,
+                    log.GetFormattedElapsedTime(),
+                    log.GetStatusDisplay(),
+                    string.IsNullOrEmpty(log.AlternativeRecommendation) ? "Nenhuma" : log.AlternativeRecommendation
+                );
 
                 if (log.Status == CorrectionStatus.PersistentExceeded10Min)
                 {
@@ -1101,7 +1208,7 @@ namespace TrafficAIOptimizer.UI
                 }
 
                 itemBtn.eventClick += (c, e) => SelectLogEntry(log);
-                itemY += 26f;
+                itemY += 38f;
             }
 
             if (_selectedLogEntry == null && logs.Count > 0)
