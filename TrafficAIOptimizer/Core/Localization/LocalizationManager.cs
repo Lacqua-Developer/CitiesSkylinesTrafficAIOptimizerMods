@@ -234,10 +234,10 @@ namespace TrafficAIOptimizer.Core.Localization
             // Botões de Ação
             ["AnalyzeTraffic"] = new Dictionary<AppLanguage, string>
             {
-                [AppLanguage.Portuguese] = "⚡ Analisar Tráfego",
-                [AppLanguage.English] = "⚡ Analyze Traffic",
-                [AppLanguage.French] = "⚡ Analyser le Trafic",
-                [AppLanguage.Spanish] = "⚡ Analizar Tráfico"
+                [AppLanguage.Portuguese] = "⚡ Diagnóstico Local",
+                [AppLanguage.English] = "⚡ Local Diagnosis",
+                [AppLanguage.French] = "⚡ Diagnostic Local",
+                [AppLanguage.Spanish] = "⚡ Diagnóstico Local"
             },
             ["FixAllTrafficBtn"] = new Dictionary<AppLanguage, string>
             {
@@ -248,10 +248,10 @@ namespace TrafficAIOptimizer.Core.Localization
             },
             ["AnalyzeAlerts"] = new Dictionary<AppLanguage, string>
             {
-                [AppLanguage.Portuguese] = "⚡ Analisar Alertas",
-                [AppLanguage.English] = "⚡ Analyze Alerts",
-                [AppLanguage.French] = "⚡ Analyser les Alertes",
-                [AppLanguage.Spanish] = "⚡ Analizar Alertas"
+                [AppLanguage.Portuguese] = "⚡ Diagnóstico Local",
+                [AppLanguage.English] = "⚡ Local Diagnosis",
+                [AppLanguage.French] = "⚡ Diagnostic Local",
+                [AppLanguage.Spanish] = "⚡ Diagnóstico Local"
             },
             ["FixAllAlertsBtn"] = new Dictionary<AppLanguage, string>
             {
@@ -262,10 +262,10 @@ namespace TrafficAIOptimizer.Core.Localization
             },
             ["Reanalyze"] = new Dictionary<AppLanguage, string>
             {
-                [AppLanguage.Portuguese] = "🔄 Reanalisar",
-                [AppLanguage.English] = "🔄 Reanalyze",
-                [AppLanguage.French] = "🔄 Réanalyser",
-                [AppLanguage.Spanish] = "🔄 Reanalizar"
+                [AppLanguage.Portuguese] = "🤖 Consultar IA",
+                [AppLanguage.English] = "🤖 Consult AI",
+                [AppLanguage.French] = "🤖 Consulter l'IA",
+                [AppLanguage.Spanish] = "🤖 Consultar IA"
             },
             ["Clear"] = new Dictionary<AppLanguage, string>
             {

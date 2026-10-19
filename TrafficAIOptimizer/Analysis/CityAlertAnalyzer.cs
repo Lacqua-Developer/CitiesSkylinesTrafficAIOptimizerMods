@@ -67,7 +67,10 @@ namespace TrafficAIOptimizer.Analysis
                         ProblemType = CityProblemType.Death,
                         ProblemDescription = Core.Localization.LocalizationManager.Get("AlertDeath"),
                         ProblemTimer = timer,
-                        Severity = 50f + timer * 0.6f
+                        Severity = 50f + timer * 0.6f,
+                        AIRootCause = "Cadáver retido no edifício aguardando translado fúnebre; frota saturada ou acesso viário bloqueado.",
+                        AIRecommendation = "Despachar serviço funerário imediato e verificar rotas de acesso de carros fúnebres.",
+                        SuggestedActions = new System.Collections.Generic.List<string> { "DISPATCH_HEARSE" }
                     });
                 }
 
@@ -83,7 +86,10 @@ namespace TrafficAIOptimizer.Analysis
                         ProblemType = CityProblemType.NoCustomers,
                         ProblemDescription = Core.Localization.LocalizationManager.Get("AlertNoCustomers"),
                         ProblemTimer = timer,
-                        Severity = 35f + timer * 0.4f
+                        Severity = 35f + timer * 0.4f,
+                        AIRootCause = "Fluxo insuficiente de pedestres/consumidores ou desabastecimento de mercadorias no estabelecimento.",
+                        AIRecommendation = "Ajustar zoneamento residencial e transporte público próximo para atrair clientes.",
+                        SuggestedActions = new System.Collections.Generic.List<string> { "BOOST_COMMERCIAL" }
                     });
                 }
 
@@ -99,7 +105,10 @@ namespace TrafficAIOptimizer.Analysis
                         ProblemType = CityProblemType.NoWorkers,
                         ProblemDescription = Core.Localization.LocalizationManager.Get("AlertNoWorkers"),
                         ProblemTimer = timer,
-                        Severity = 35f + timer * 0.4f
+                        Severity = 35f + timer * 0.4f,
+                        AIRootCause = "Falta de mão de obra qualificada no entorno ou transporte público insuficiente para conexão de bairros.",
+                        AIRecommendation = "Expandir conexões viárias/metrô e rebalancear nível educacional das escolas da região.",
+                        SuggestedActions = new System.Collections.Generic.List<string> { "BOOST_WORKERS" }
                     });
                 }
 
@@ -115,7 +124,10 @@ namespace TrafficAIOptimizer.Analysis
                         ProblemType = CityProblemType.Water,
                         ProblemDescription = Core.Localization.LocalizationManager.Get("AlertWater"),
                         ProblemTimer = timer,
-                        Severity = 45f + timer * 0.5f
+                        Severity = 45f + timer * 0.5f,
+                        AIRootCause = "Rede hídrica desconectada ou capacidade de bombeamento de água potável saturada.",
+                        AIRecommendation = "Conectar tubulação subterrânea de água e restabelecer pressão hidráulica municipal.",
+                        SuggestedActions = new System.Collections.Generic.List<string> { "RESTORE_WATER" }
                     });
                 }
                 else if ((problems & Notification.Problem.Sewage) != 0)
@@ -129,7 +141,10 @@ namespace TrafficAIOptimizer.Analysis
                         ProblemType = CityProblemType.Sewage,
                         ProblemDescription = Core.Localization.LocalizationManager.Get("AlertSewage"),
                         ProblemTimer = timer,
-                        Severity = 42f + timer * 0.5f
+                        Severity = 42f + timer * 0.5f,
+                        AIRootCause = "Esgoto acumulado no imóvel por falta de tubos coletores ou saturação dos canos de descarte.",
+                        AIRecommendation = "Desobstruir a tubulação e interligar nova saída de escoamento de esgoto sanitário.",
+                        SuggestedActions = new System.Collections.Generic.List<string> { "RESTORE_SEWAGE" }
                     });
                 }
 
@@ -145,7 +160,10 @@ namespace TrafficAIOptimizer.Analysis
                         ProblemType = CityProblemType.Electricity,
                         ProblemDescription = Core.Localization.LocalizationManager.Get("AlertElectricity"),
                         ProblemTimer = timer,
-                        Severity = 45f + timer * 0.5f
+                        Severity = 45f + timer * 0.5f,
+                        AIRootCause = "Edifício isolado da malha elétrica urbana ou consumo geral da cidade superior à geração ativa.",
+                        AIRecommendation = "Reconectar malha com linhas de alta tensão e expandir capacidade das usinas geradoras.",
+                        SuggestedActions = new System.Collections.Generic.List<string> { "RESTORE_ELECTRICITY" }
                     });
                 }
 
@@ -161,7 +179,10 @@ namespace TrafficAIOptimizer.Analysis
                         ProblemType = CityProblemType.Garbage,
                         ProblemDescription = Core.Localization.LocalizationManager.Get("AlertGarbage"),
                         ProblemTimer = timer,
-                        Severity = 38f + timer * 0.4f
+                        Severity = 38f + timer * 0.4f,
+                        AIRootCause = "Lixo acumulado na calçada; capacidade de aterro/incineração sobrecarregada ou rotas emperradas.",
+                        AIRecommendation = "Despachar caminhão de lixo prioritário e desobstruir vias de tráfego de caminhões de limpeza.",
+                        SuggestedActions = new System.Collections.Generic.List<string> { "DISPATCH_GARBAGE" }
                     });
                 }
 
@@ -177,7 +198,10 @@ namespace TrafficAIOptimizer.Analysis
                         ProblemType = CityProblemType.Fire,
                         ProblemDescription = Core.Localization.LocalizationManager.Get("AlertFire"),
                         ProblemTimer = intensity,
-                        Severity = 75f + intensity * 0.25f
+                        Severity = 75f + intensity * 0.25f,
+                        AIRootCause = "Incêndio ativo no imóvel com risco iminente de propagação e colapso estrutural.",
+                        AIRecommendation = "Despacho prioritário do corpo de bombeiros para extinção das chamas.",
+                        SuggestedActions = new System.Collections.Generic.List<string> { "DISPATCH_FIREFIGHTER" }
                     });
                 }
 
@@ -193,7 +217,10 @@ namespace TrafficAIOptimizer.Analysis
                         ProblemType = CityProblemType.Crime,
                         ProblemDescription = Core.Localization.LocalizationManager.Get("AlertCrime"),
                         ProblemTimer = crime,
-                        Severity = 35f + crime * 0.2f
+                        Severity = 35f + crime * 0.2f,
+                        AIRootCause = "Ocorrência criminal ativa no local decorrente de baixa cobertura de patrulhamento.",
+                        AIRecommendation = "Despachar viatura policial de emergência e restabelecer a segurança pública.",
+                        SuggestedActions = new System.Collections.Generic.List<string> { "DISPATCH_POLICE" }
                     });
                 }
             }

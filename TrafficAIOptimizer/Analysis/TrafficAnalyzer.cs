@@ -140,6 +140,40 @@ namespace TrafficAIOptimizer.Analysis
 
                 bool isSingleLane = (laneCount >= 2 && (stuckCount >= 2 || (vehicleCount >= 3 && speedPercent < 45f)));
 
+                // Diagnóstico heurístico nativo (permite análise e correção local sem dependência de IA externa)
+                string rootCause;
+                string recommendation;
+                List<string> suggestedActions = new List<string>();
+
+                if (isSingleLane)
+                {
+                    rootCause = string.Format("Fila Indiana: veículos concentrados em faixa única nesta via de {0} faixas com pistas paralelas livres.", laneCount);
+                    recommendation = "Ativar Dynamic Lane Selection (TM:PE), balancear setas viárias e re-rotear veículos estagnados.";
+                    suggestedActions.Add("REDISTRIBUTE_LANES");
+                }
+                else if (hasTrafficLight && score > 50)
+                {
+                    rootCause = "Semáforo causando retenção excessiva e desaceleração do fluxo arterial.";
+                    recommendation = "Desativar semáforo para trânsito livre ou rotatória preferencial.";
+                    suggestedActions.Add("REMOVE_TRAFFIC_LIGHT");
+                }
+                else if (!hasTrafficLight && score > 70 && connectedSegs.Count >= 3)
+                {
+                    rootCause = "Cruzamento confluente de alto volume sem ordenação de tráfego.";
+                    recommendation = "Instalar semáforo sincronizado para controlar preferências.";
+                    suggestedActions.Add("ADD_TRAFFIC_LIGHT");
+                }
+                else
+                {
+                    rootCause = "Sobrecarga de volume veicular e lentidão na aproximação do cruzamento.";
+                    recommendation = "Desobstruir veículos estagnados e otimizar velocidade da malha.";
+                }
+
+                if (stuckCount > 0)
+                {
+                    suggestedActions.Add("CLEAR_STUCK_VEHICLES");
+                }
+
                 TrafficBottleneck bottleneck = new TrafficBottleneck
                 {
                     NodeId = criticalNode,
@@ -154,7 +188,10 @@ namespace TrafficAIOptimizer.Analysis
                     ConnectedSegmentsCount = connectedSegs.Count,
                     ConnectedSegmentIds = connectedSegs,
                     LaneCount = laneCount,
-                    IsSingleLaneCongestion = isSingleLane
+                    IsSingleLaneCongestion = isSingleLane,
+                    AIRootCause = rootCause,
+                    AIRecommendation = recommendation,
+                    SuggestedActions = suggestedActions
                 };
 
                 bottlenecks.Add(bottleneck);

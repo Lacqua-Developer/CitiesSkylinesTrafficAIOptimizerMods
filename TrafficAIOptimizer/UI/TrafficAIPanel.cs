@@ -414,7 +414,8 @@ namespace TrafficAIOptimizer.UI
             _analyzeTrafficBtn.hoveredBgSprite = "ButtonMenuHovered";
             _analyzeTrafficBtn.textScale = 0.85f;
             _analyzeTrafficBtn.textColor = new Color32(100, 255, 100, 255);
-            _analyzeTrafficBtn.eventClick += (c, e) => OnAnalyzeTrafficClicked();
+            _analyzeTrafficBtn.tooltip = "Diagnóstico Local rápido e gratuito sem consumo de API/IA.";
+            _analyzeTrafficBtn.eventClick += (c, e) => OnAnalyzeTrafficClicked(useAI: false);
 
             _fixAllTrafficBtn = _trafficTabPanel.AddUIComponent<UIButton>();
             _fixAllTrafficBtn.text = LocalizationManager.Get("FixAllTrafficBtn");
@@ -437,7 +438,8 @@ namespace TrafficAIOptimizer.UI
             _reanalyzeTrafficBtn.hoveredBgSprite = "ButtonMenuHovered";
             _reanalyzeTrafficBtn.textScale = 0.85f;
             _reanalyzeTrafficBtn.textColor = new Color32(150, 220, 255, 255);
-            _reanalyzeTrafficBtn.eventClick += (c, e) => OnAnalyzeTrafficClicked();
+            _reanalyzeTrafficBtn.tooltip = "Consulta o modelo de IA selecionado para obter análise estratégica de malha e zoneamento.";
+            _reanalyzeTrafficBtn.eventClick += (c, e) => OnAnalyzeTrafficClicked(useAI: true);
 
             _clearTrafficBtn = _trafficTabPanel.AddUIComponent<UIButton>();
             _clearTrafficBtn.text = LocalizationManager.Get("Clear");
@@ -542,7 +544,8 @@ namespace TrafficAIOptimizer.UI
             _analyzeAlertsBtn.hoveredBgSprite = "ButtonMenuHovered";
             _analyzeAlertsBtn.textScale = 0.85f;
             _analyzeAlertsBtn.textColor = new Color32(255, 180, 80, 255);
-            _analyzeAlertsBtn.eventClick += (c, e) => OnAnalyzeAlertsClicked();
+            _analyzeAlertsBtn.tooltip = "Diagnóstico Local rápido e gratuito sem consumo de API/IA.";
+            _analyzeAlertsBtn.eventClick += (c, e) => OnAnalyzeAlertsClicked(useAI: false);
 
             _fixAllAlertsBtn = _cityAlertsTabPanel.AddUIComponent<UIButton>();
             _fixAllAlertsBtn.text = LocalizationManager.Get("FixAllAlertsBtn");
@@ -565,7 +568,8 @@ namespace TrafficAIOptimizer.UI
             _reanalyzeAlertsBtn.hoveredBgSprite = "ButtonMenuHovered";
             _reanalyzeAlertsBtn.textScale = 0.85f;
             _reanalyzeAlertsBtn.textColor = new Color32(150, 220, 255, 255);
-            _reanalyzeAlertsBtn.eventClick += (c, e) => OnAnalyzeAlertsClicked();
+            _reanalyzeAlertsBtn.tooltip = "Consulta o modelo de IA selecionado para obter análise estratégica de zoneamento e serviços.";
+            _reanalyzeAlertsBtn.eventClick += (c, e) => OnAnalyzeAlertsClicked(useAI: true);
 
             _clearAlertsBtn = _cityAlertsTabPanel.AddUIComponent<UIButton>();
             _clearAlertsBtn.text = LocalizationManager.Get("Clear");
@@ -802,15 +806,8 @@ namespace TrafficAIOptimizer.UI
         // ==========================================
         // AÇÕES DA ABA DE TRÁFEGO
         // ==========================================
-        private void OnAnalyzeTrafficClicked()
+        private void OnAnalyzeTrafficClicked(bool useAI = false)
         {
-            if (!SecureKeyStorage.HasKeyFor(AIClient.CurrentProvider))
-            {
-                var desc = AIProviderRegistry.GetDescriptor(AIClient.CurrentProvider);
-                SetStatus(string.Format("Chave de API não informada para {0}. Insira sua chave acima.", desc.DisplayName), Color.red);
-                return;
-            }
-
             SetStatus(LocalizationManager.Get("ScanningTraffic"), Color.cyan);
             if (_analyzeTrafficBtn != null) _analyzeTrafficBtn.isEnabled = false;
             if (_reanalyzeTrafficBtn != null) _reanalyzeTrafficBtn.isEnabled = false;
@@ -827,6 +824,28 @@ namespace TrafficAIOptimizer.UI
                 return;
             }
 
+            _currentBottlenecks = bottlenecks;
+            PopulateBottlenecksList(bottlenecks);
+
+            // 1. Modo Local (sem envio para IA)
+            if (!useAI)
+            {
+                if (_analyzeTrafficBtn != null) _analyzeTrafficBtn.isEnabled = true;
+                if (_reanalyzeTrafficBtn != null) _reanalyzeTrafficBtn.isEnabled = true;
+                SetStatus(string.Format("Diagnóstico Local concluído (sem IA). {0} gargalo(s) identificado(s) e prontos para correção!", bottlenecks.Count), Color.green);
+                return;
+            }
+
+            // 2. Modo Consulta à IA (opcional)
+            if (!SecureKeyStorage.HasKeyFor(AIClient.CurrentProvider))
+            {
+                if (_analyzeTrafficBtn != null) _analyzeTrafficBtn.isEnabled = true;
+                if (_reanalyzeTrafficBtn != null) _reanalyzeTrafficBtn.isEnabled = true;
+                var desc = AIProviderRegistry.GetDescriptor(AIClient.CurrentProvider);
+                SetStatus(string.Format("Diagnóstico local carregado! Para consultar IA na nuvem, defina sua chave para {0}.", desc.DisplayName), Color.yellow);
+                return;
+            }
+
             var activeDesc = AIProviderRegistry.GetDescriptor(AIClient.CurrentProvider);
             SetStatus(string.Format("Enviando {0} gargalos para {1} ({2})...", bottlenecks.Count, activeDesc.DisplayName, AIClient.CurrentModel), Color.cyan);
 
@@ -836,7 +855,7 @@ namespace TrafficAIOptimizer.UI
                 {
                     if (_analyzeTrafficBtn != null) _analyzeTrafficBtn.isEnabled = true;
                     if (_reanalyzeTrafficBtn != null) _reanalyzeTrafficBtn.isEnabled = true;
-                    SetStatus(string.Format("Análise concluída com sucesso via {0}! ({1} gargalos)", activeDesc.DisplayName, results.Count), Color.green);
+                    SetStatus(string.Format("Análise com IA concluída via {0}! ({1} gargalos)", activeDesc.DisplayName, results.Count), Color.green);
                     _currentBottlenecks = results;
                     PopulateBottlenecksList(results);
                 },
@@ -844,7 +863,7 @@ namespace TrafficAIOptimizer.UI
                 {
                     if (_analyzeTrafficBtn != null) _analyzeTrafficBtn.isEnabled = true;
                     if (_reanalyzeTrafficBtn != null) _reanalyzeTrafficBtn.isEnabled = true;
-                    SetStatus(error, Color.red);
+                    SetStatus("Falha na consulta à IA. Mantendo diagnóstico local nativo: " + error, Color.yellow);
                 }
             );
         }
@@ -1020,15 +1039,8 @@ namespace TrafficAIOptimizer.UI
         // ==========================================
         // AÇÕES DA ABA DE ALERTAS URBANOS
         // ==========================================
-        private void OnAnalyzeAlertsClicked()
+        private void OnAnalyzeAlertsClicked(bool useAI = false)
         {
-            if (!SecureKeyStorage.HasKeyFor(AIClient.CurrentProvider))
-            {
-                var desc = AIProviderRegistry.GetDescriptor(AIClient.CurrentProvider);
-                SetStatus(string.Format("Chave de API não informada para {0}. Insira sua chave acima.", desc.DisplayName), Color.red);
-                return;
-            }
-
             SetStatus(LocalizationManager.Get("ScanningAlerts"), Color.cyan);
             if (_analyzeAlertsBtn != null) _analyzeAlertsBtn.isEnabled = false;
             if (_reanalyzeAlertsBtn != null) _reanalyzeAlertsBtn.isEnabled = false;
@@ -1044,6 +1056,28 @@ namespace TrafficAIOptimizer.UI
                 return;
             }
 
+            _currentAlerts = alerts;
+            PopulateAlertsList(alerts);
+
+            // 1. Modo Local (sem envio para IA)
+            if (!useAI)
+            {
+                if (_analyzeAlertsBtn != null) _analyzeAlertsBtn.isEnabled = true;
+                if (_reanalyzeAlertsBtn != null) _reanalyzeAlertsBtn.isEnabled = true;
+                SetStatus(string.Format("Diagnóstico Local concluído (sem IA). {0} alerta(s) municipais prontos para resolução imediata!", alerts.Count), Color.green);
+                return;
+            }
+
+            // 2. Modo Consulta à IA (opcional)
+            if (!SecureKeyStorage.HasKeyFor(AIClient.CurrentProvider))
+            {
+                if (_analyzeAlertsBtn != null) _analyzeAlertsBtn.isEnabled = true;
+                if (_reanalyzeAlertsBtn != null) _reanalyzeAlertsBtn.isEnabled = true;
+                var desc = AIProviderRegistry.GetDescriptor(AIClient.CurrentProvider);
+                SetStatus(string.Format("Diagnóstico local carregado! Para consultar IA na nuvem, defina sua chave para {0}.", desc.DisplayName), Color.yellow);
+                return;
+            }
+
             var activeDesc = AIProviderRegistry.GetDescriptor(AIClient.CurrentProvider);
             SetStatus(string.Format("Enviando {0} alertas urbanos para {1} ({2})...", alerts.Count, activeDesc.DisplayName, AIClient.CurrentModel), Color.cyan);
 
@@ -1053,7 +1087,7 @@ namespace TrafficAIOptimizer.UI
                 {
                     if (_analyzeAlertsBtn != null) _analyzeAlertsBtn.isEnabled = true;
                     if (_reanalyzeAlertsBtn != null) _reanalyzeAlertsBtn.isEnabled = true;
-                    SetStatus(string.Format("Diagnóstico municipal concluído via {0}! ({1} alertas)", activeDesc.DisplayName, results.Count), Color.green);
+                    SetStatus(string.Format("Diagnóstico municipal via IA concluído via {0}! ({1} alertas)", activeDesc.DisplayName, results.Count), Color.green);
                     _currentAlerts = results;
                     PopulateAlertsList(results);
                 },
@@ -1061,7 +1095,7 @@ namespace TrafficAIOptimizer.UI
                 {
                     if (_analyzeAlertsBtn != null) _analyzeAlertsBtn.isEnabled = true;
                     if (_reanalyzeAlertsBtn != null) _reanalyzeAlertsBtn.isEnabled = true;
-                    SetStatus(error, Color.red);
+                    SetStatus("Falha na consulta à IA. Mantendo diagnóstico local nativo: " + error, Color.yellow);
                 }
             );
         }

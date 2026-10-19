@@ -49,25 +49,25 @@ namespace TrafficAIOptimizer.Tests.Services
         {
             // Português
             LocalizationManager.ForceLanguage(AppLanguage.Portuguese);
-            Assert.AreEqual("⚡ Analisar Tráfego", LocalizationManager.Get("AnalyzeTraffic"));
+            Assert.AreEqual("⚡ Diagnóstico Local", LocalizationManager.Get("AnalyzeTraffic"));
             Assert.AreEqual("Aguardando transporte de cadáver", LocalizationManager.Get("AlertDeath"));
             Assert.AreEqual("Resolvido", LocalizationManager.Get("StatusResolved"));
 
             // Inglês
             LocalizationManager.ForceLanguage(AppLanguage.English);
-            Assert.AreEqual("⚡ Analyze Traffic", LocalizationManager.Get("AnalyzeTraffic"));
+            Assert.AreEqual("⚡ Local Diagnosis", LocalizationManager.Get("AnalyzeTraffic"));
             Assert.AreEqual("Waiting for hearse / death care", LocalizationManager.Get("AlertDeath"));
             Assert.AreEqual("Resolved", LocalizationManager.Get("StatusResolved"));
 
             // Francês
             LocalizationManager.ForceLanguage(AppLanguage.French);
-            Assert.AreEqual("⚡ Analyser le Trafic", LocalizationManager.Get("AnalyzeTraffic"));
+            Assert.AreEqual("⚡ Diagnostic Local", LocalizationManager.Get("AnalyzeTraffic"));
             Assert.AreEqual("En attente de corbillard", LocalizationManager.Get("AlertDeath"));
             Assert.AreEqual("Résolu", LocalizationManager.Get("StatusResolved"));
 
             // Espanhol
             LocalizationManager.ForceLanguage(AppLanguage.Spanish);
-            Assert.AreEqual("⚡ Analizar Tráfico", LocalizationManager.Get("AnalyzeTraffic"));
+            Assert.AreEqual("⚡ Diagnóstico Local", LocalizationManager.Get("AnalyzeTraffic"));
             Assert.AreEqual("Esperando coche fúnebre", LocalizationManager.Get("AlertDeath"));
             Assert.AreEqual("Resuelto", LocalizationManager.Get("StatusResolved"));
         }
